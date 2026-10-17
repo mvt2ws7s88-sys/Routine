@@ -267,7 +267,7 @@ function applyPenalties(){
 }
 /* ===== OUTILS D'AFFICHAGE ===== */
 function esc(s){
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'''}[c]));
+  return String(s).split('&').join('&').split('<').join('<').split('>').join('>').split('"').join('"').split("'").join(''');
 }
 function ring(pct, color, size){
   const r = size/2 - 6, c = 2*Math.PI*r;
