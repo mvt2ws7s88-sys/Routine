@@ -388,9 +388,6 @@ hr.sep{border:none;border-top:1px solid var(--line);margin:14px 0}
 <div class="toast" id="toast"></div>
 
 <script>
-/* ================================================================
-   PARTIE 2 : DONNÉES, QUÊTES, XP, PÉNALITÉS
-   ================================================================ */
 
 /* ---------- CONSTANTES ---------- */
 var STORE_KEY = 'jdv_data_v2';
@@ -511,10 +508,6 @@ function repairState() {
   }
 }
 
-/* ---------- CONVERSION DES ANCIENNES DONNÉES ----------
-   facile -> commune | dure -> epique | difficile -> legendaire
-   On garde le plus possible : nom, XP, centre d'intérêt, historique.
------------------------------------------------------------------- */
 function convertOldType(t) {
   t = String(t || '').toLowerCase();
   if (t.indexOf('diff') === 0) return 'legendaire';
@@ -759,10 +752,6 @@ function restoreQuest(id) {
   toast('Quête restaurée');
 }
 
-/* ---------- PÉNALITÉ -5 XP (journalières uniquement) ----------
-   Appliquée pour chaque jour PASSÉ (jamais aujourd'hui) où une
-   journalière existante n'a pas été cochée.
------------------------------------------------------------------- */
 function applyPenalties() {
   var today = dateKey();
   var from = state.lastPenaltyCheck || today;
