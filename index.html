@@ -1,496 +1,1498 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Jeu de la Vie">
 <title>Jeu de la Vie</title>
 <style>
-:root{--bg:#000;--card:#1c1c1e;--card2:#2c2c2e;--muted:#98989f;--text:#f5f5f7;--line:#38383a;--blue:#0A84FF;--green:#30D158;--red:#FF453A;--orange:#FF9F0A;--purple:#BF5AF2}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,sans-serif}
-body{min-height:100vh;padding-bottom:90px}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
-input{font:inherit;color:inherit}
-#app{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 16px) 16px 16px}
-.topbar small{color:var(--muted);font-weight:600;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
-.topbar h1{margin:2px 0 16px;font-size:34px;font-weight:800}
-.view{display:none}.view.active{display:block}
-.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:12px}
-.bar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden;margin-top:8px}
-.bar>i{display:block;height:100%;border-radius:99px;width:0;transition:width .5s}
-.row{display:flex;align-items:center;gap:12px}
-.grow{flex:1;min-width:0}
-.big{font-size:22px;font-weight:800}
-.muted{color:var(--muted);font-size:13px}
-.section-head{display:flex;justify-content:space-between;align-items:baseline;margin:18px 4px 8px}
-.section-head h2{margin:0;font-size:18px}
-.section-head span{color:var(--muted);font-size:13px}
-.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
-.chip{background:var(--card);padding:8px 14px;border-radius:99px;font-size:14px;white-space:nowrap}
-.chip.active{background:var(--blue)}
-.quest{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:12px 14px;margin-bottom:8px}
-.check{width:28px;height:28px;border-radius:50%;border:2px solid var(--muted);flex:none;display:grid;place-items:center;font-size:15px}
-.check.on{background:var(--green);border-color:var(--green);color:#000}
-.quest.done .qname{text-decoration:line-through;color:var(--muted)}
-.qname{font-weight:600}
-.tag{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--card2);color:var(--muted);margin-right:4px;display:inline-block}
-.del{color:var(--muted);font-size:22px;padding:0 6px}
-.empty{color:var(--muted);text-align:center;padding:24px 8px;font-size:14px}
-.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-around;background:rgba(28,28,30,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--line);padding:8px 0 calc(env(safe-area-inset-bottom) + 8px);z-index:20}
-.tab{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--muted);padding:4px 24px}
-.tab b{font-size:22px;font-weight:400}
-.tab.active{color:var(--blue)}
-.fab{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom) + 84px);width:56px;height:56px;border-radius:50%;background:var(--blue);font-size:30px;z-index:15;box-shadow:0 6px 20px rgba(10,132,255,.4)}
-.modal-bg,.lu{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:50;display:none}
-.modal-bg.open,.lu.open{display:flex}
-.modal-bg{align-items:flex-end}
-.sheet{background:var(--card);width:100%;max-width:560px;margin:0 auto;border-radius:22px 22px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom) + 20px);max-height:90vh;overflow:auto}
-.sheet h3{margin:0 0 12px}
-.field{width:100%;background:var(--card2);border-radius:12px;padding:12px;border:0;margin-bottom:12px;outline:none}
-.btn{background:var(--blue);padding:13px;border-radius:12px;font-weight:700;width:100%;margin-top:6px}
-.btn.ghost{background:var(--card2)}
-.btn.danger{background:var(--red)}
-.pill{display:inline-block;background:var(--card2);padding:8px 12px;border-radius:99px;margin:0 6px 8px 0;font-size:14px}
-.pill.sel{background:var(--blue)}
-.lu{align-items:center;justify-content:center;text-align:center;flex-direction:column}
-.lu h1{font-size:44px;margin:0;color:var(--orange)}
-.lu p{font-size:18px;margin:8px 0 20px}
-.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 12px);transform:translateX(-50%);background:var(--card2);padding:10px 18px;border-radius:99px;font-size:14px;z-index:60;opacity:0;pointer-events:none;transition:opacity .3s}
-.toast.show{opacity:1}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.mini{background:var(--card);border-radius:16px;padding:14px}
-.mini small{color:var(--muted);display:block;font-size:12px}
-.mini b{font-size:24px}
-.seg{display:flex;background:var(--card);border-radius:12px;padding:3px;margin-bottom:12px}
-.seg button{flex:1;padding:8px;border-radius:10px;font-size:14px}
-.seg button.active{background:var(--card2)}
-svg.chart{width:100%;height:auto}
-svg.chart text{fill:#98989f;font-size:11px}
-svg.chart line{stroke:#38383a}
-.hist{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+/* ============ VARIABLES ============ */
+:root{
+  --bg:#000;
+  --bg2:#0b0b0d;
+  --card:#1c1c1e;
+  --card2:#2c2c2e;
+  --line:#38383a;
+  --text:#f5f5f7;
+  --muted:#8e8e93;
+  --blue:#0a84ff;
+  --green:#30d158;
+  --red:#ff453a;
+  --orange:#ff9f0a;
+  --purple:#bf5af2;
+  --yellow:#ffd60a;
+  --radius:18px;
+  --c-sport:#ff453a;
+  --c-meditation:#bf5af2;
+  --c-philosophie:#ffd60a;
+  --c-electronique:#0a84ff;
+  --c-overall:#30d158;
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:90px;
+}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+input,select,textarea{font-family:inherit;color:var(--text)}
+
+/* ============ LAYOUT ============ */
+.app{max-width:720px;margin:0 auto;padding:20px 16px}
+header.top{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:18px;
+}
+header.top h1{font-size:30px;font-weight:700;letter-spacing:-.5px}
+header.top .date{color:var(--muted);font-size:14px;margin-top:2px}
+.icon-btn{
+  background:var(--card);width:38px;height:38px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+
+/* ============ NAVIGATION (barre du bas) ============ */
+nav.tabs{
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(28,28,30,.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid var(--line);
+  display:flex;justify-content:space-around;
+  padding:8px 4px calc(8px + env(safe-area-inset-bottom));
+  z-index:50;
+}
+nav.tabs button{
+  background:none;flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:3px;font-size:10px;color:var(--muted);padding:4px 0;
+}
+nav.tabs button .ico{font-size:21px}
+nav.tabs button.active{color:var(--blue)}
+
+/* ============ VUES ============ */
+.view{display:none}
+.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ============ CARTES ============ */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:16px;margin-bottom:14px;
+}
+.card h2{font-size:17px;font-weight:600;margin-bottom:12px}
+.card h3{font-size:13px;color:var(--muted);font-weight:500;
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.center{text-align:center}
+
+/* ============ PROFIL ============ */
+.profile{
+  display:flex;align-items:center;gap:14px;
+}
+.avatar{
+  width:62px;height:62px;border-radius:50%;
+  background:linear-gradient(135deg,var(--blue),var(--purple));
+  display:flex;align-items:center;justify-content:center;font-size:30px;
+  flex-shrink:0;
+}
+.profile .info{flex:1;min-width:0}
+.profile .name{font-size:19px;font-weight:700}
+.profile .title{color:var(--yellow);font-size:14px;font-weight:600;margin-top:2px}
+
+/* ============ BARRES DE PROGRESSION ============ */
+.bar{
+  height:8px;background:var(--card2);border-radius:99px;overflow:hidden;
+}
+.bar > i{
+  display:block;height:100%;width:0;border-radius:99px;
+  background:var(--blue);transition:width .5s cubic-bezier(.2,.8,.2,1);
+}
+
+/* ============ CENTRES D'INTÉRÊT ============ */
+.stat{margin-bottom:14px}
+.stat:last-child{margin-bottom:0}
+.stat .head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.stat .lbl{font-weight:600;font-size:15px}
+.stat .lvl{font-size:13px;color:var(--muted)}
+.stat .ttl{font-size:12px;margin-top:4px;color:var(--muted)}
+
+/* ============ QUÊTES ============ */
+.quest{
+  display:flex;align-items:center;gap:12px;
+  background:var(--card2);border-radius:14px;
+  padding:12px 14px;margin-bottom:8px;
+}
+.quest:last-child{margin-bottom:0}
+.check{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid var(--muted);background:none;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:transparent;transition:all .2s;
+}
+.quest.done .check{background:var(--green);border-color:var(--green);color:#000}
+.quest.done .q-name{text-decoration:line-through;color:var(--muted)}
+.q-body{flex:1;min-width:0}
+.q-name{font-size:15px;font-weight:500}
+.q-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.badge{
+  font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;
+  background:rgba(255,255,255,.08);color:var(--muted);
+}
+.badge.t-journaliere{background:rgba(10,132,255,.18);color:var(--blue)}
+.badge.t-commune{background:rgba(48,209,88,.18);color:var(--green)}
+.badge.t-epique{background:rgba(191,90,242,.18);color:var(--purple)}
+.badge.t-legendaire{background:rgba(255,159,10,.2);color:var(--orange)}
+.badge.xp{background:rgba(255,214,10,.15);color:var(--yellow)}
+.q-actions{display:flex;gap:6px}
+.mini{
+  background:none;color:var(--muted);font-size:16px;
+  width:30px;height:30px;border-radius:8px;
+}
+.mini:active{background:var(--card)}
+
+/* ============ ONGLETS INTERNES ============ */
+.seg{
+  display:flex;background:var(--card);border-radius:12px;
+  padding:3px;margin-bottom:14px;
+}
+.seg button{
+  flex:1;background:none;padding:8px 4px;border-radius:9px;
+  font-size:13px;font-weight:600;color:var(--muted);
+}
+.seg button.active{background:var(--card2);color:var(--text)}
+
+/* ============ BOUTONS ============ */
+.btn{
+  background:var(--blue);color:#fff;font-weight:600;font-size:15px;
+  padding:13px 18px;border-radius:14px;width:100%;
+}
+.btn:active{opacity:.8}
+.btn.secondary{background:var(--card2);color:var(--text)}
+.btn.danger{background:rgba(255,69,58,.15);color:var(--red)}
+.btn.small-btn{width:auto;padding:8px 14px;font-size:13px;border-radius:10px}
+.btn-row{display:flex;gap:8px}
+
+/* ============ FORMULAIRES ============ */
+label.field{display:block;margin-bottom:14px}
+label.field > span{
+  display:block;font-size:12px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;
+}
+input[type=text],input[type=number],input[type=time],select,textarea{
+  width:100%;background:var(--card2);border:1px solid transparent;
+  border-radius:12px;padding:12px 14px;font-size:16px;outline:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--blue)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  background:var(--card2);padding:8px 14px;border-radius:99px;
+  font-size:14px;font-weight:500;border:1px solid transparent;
+}
+.chip.on{border-color:var(--blue);background:rgba(10,132,255,.15);color:var(--blue)}
+
+/* ============ MODALE ============ */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:none;align-items:flex-end;justify-content:center;z-index:100;
+}
+.modal-bg.show{display:flex}
+.modal{
+  background:var(--card);width:100%;max-width:720px;
+  border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));
+  max-height:90vh;overflow-y:auto;
+  animation:up .28s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.modal h2{font-size:20px;margin-bottom:16px}
+
+/* ============ GRAPHIQUES ============ */
+.chart{width:100%;height:170px;display:block}
+.chart-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.chart-legend span{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.chart-legend i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+/* ============ EMPLOI DU TEMPS ============ */
+.slot{
+  display:flex;gap:12px;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--line);
+}
+.slot:last-child{border-bottom:none}
+.slot .time{width:84px;font-size:13px;color:var(--muted);flex-shrink:0}
+.slot .what{flex:1;font-size:15px}
+
+/* ============ TOAST ============ */
+.toast{
+  position:fixed;top:18px;left:50%;transform:translate(-50%,-120px);
+  background:var(--card2);color:var(--text);padding:12px 20px;
+  border-radius:99px;font-size:14px;font-weight:500;z-index:200;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  max-width:90%;text-align:center;
+}
+.toast.show{transform:translate(-50%,0)}
+
+/* ============ DIVERS ============ */
+.empty{text-align:center;color:var(--muted);padding:26px 10px;font-size:14px}
+.nav-day{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.nav-day button{
+  background:var(--card);width:36px;height:36px;border-radius:50%;font-size:16px;
+}
+.nav-day .label{font-weight:600;font-size:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi{background:var(--card2);border-radius:14px;padding:14px;text-align:center}
+.kpi b{display:block;font-size:24px;font-weight:700}
+.kpi span{font-size:12px;color:var(--muted)}
+.history-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;
+}
+.history-item:last-child{border-bottom:none}
+hr.sep{border:none;border-top:1px solid var(--line);margin:14px 0}
 </style>
 </head>
+
 <body>
-<div id="app">
-  <div class="topbar"><small>Jeu de la vie</small><h1 id="pageTitle">Profil</h1></div>
-  <div id="profileView" class="view active"></div>
-  <div id="questsView" class="view"></div>
-  <div id="statsView" class="view"></div>
+<div class="app">
+
+  <!-- ============ EN-TÊTE ============ -->
+  <header class="top">
+    <div>
+      <h1>Jeu de la Vie</h1>
+      <div class="date" id="todayLabel"></div>
+    </div>
+    <button class="icon-btn" id="btnSettings" aria-label="Réglages">⚙</button>
+  </header>
+
+  <!-- ============ VUE : AUJOURD'HUI ============ -->
+  <section class="view active" id="view-today">
+
+    <div class="card">
+      <div class="profile">
+        <div class="avatar">⚔</div>
+        <div class="info">
+          <div class="name" id="playerName">Joueur</div>
+          <div class="title" id="playerTitle"></div>
+          <div class="bar" style="margin-top:8px"><i id="overallBar" style="background:var(--c-overall)"></i></div>
+          <div class="small muted" style="margin-top:5px" id="overallText"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-day">
+      <button id="dayPrev">‹</button>
+      <div class="label" id="dayLabel"></div>
+      <button id="dayNext">›</button>
+    </div>
+
+    <div class="card">
+      <div class="row between" style="margin-bottom:12px">
+        <h2 style="margin:0">Quêtes journalières</h2>
+        <span class="small muted" id="dailyCount"></span>
+      </div>
+      <div id="dailyList"></div>
+      <div class="small muted center" style="margin-top:12px" id="penaltyNote"></div>
+    </div>
+
+    <div class="card">
+      <h3>Emploi du temps du jour</h3>
+      <div id="todaySchedule"></div>
+    </div>
+
+    <button class="btn" id="btnAddQuestToday">+ Nouvelle quête</button>
+  </section>
+
+  <!-- ============ VUE : QUÊTES (commune / épique / légendaire) ============ -->
+  <section class="view" id="view-quests">
+    <div class="seg" id="questSeg">
+      <button data-f="actives" class="active">Actives</button>
+      <button data-f="commune">Communes</button>
+      <button data-f="epique">Épiques</button>
+      <button data-f="legendaire">Légendaires</button>
+      <button data-f="archive">Archives</button>
+    </div>
+    <div id="questList"></div>
+    <button class="btn" id="btnAddQuest" style="margin-top:6px">+ Nouvelle quête</button>
+  </section>
+
+  <!-- ============ VUE : PROFIL / CENTRES D'INTÉRÊT ============ -->
+  <section class="view" id="view-profile">
+    <div class="card">
+      <h2>Niveaux</h2>
+      <div id="statsList"></div>
+    </div>
+    <div class="card">
+      <h2>Titres</h2>
+      <div id="titlesList"></div>
+    </div>
+  </section>
+
+  <!-- ============ VUE : STATS / GRAPHIQUES ============ -->
+  <section class="view" id="view-stats">
+    <div class="seg" id="statSeg">
+      <button data-r="day" class="active">Jour</button>
+      <button data-r="week">Semaine</button>
+      <button data-r="month">Mois</button>
+    </div>
+    <div class="grid2" style="margin-bottom:14px" id="kpis"></div>
+    <div class="card">
+      <h3 id="chartTitle">XP gagnée</h3>
+      <canvas class="chart" id="chart"></canvas>
+      <div class="chart-legend" id="chartLegend"></div>
+    </div>
+    <div class="card">
+      <h3>Historique récent</h3>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <!-- ============ VUE : EMPLOI DU TEMPS ============ -->
+  <section class="view" id="view-schedule">
+    <div class="seg" id="schedSeg">
+      <button data-d="1" class="active">Lun</button>
+      <button data-d="2">Mar</button>
+      <button data-d="3">Mer</button>
+      <button data-d="4">Jeu</button>
+      <button data-d="5">Ven</button>
+      <button data-d="6">Sam</button>
+      <button data-d="0">Dim</button>
+    </div>
+    <div class="card">
+      <div id="schedList"></div>
+    </div>
+    <button class="btn" id="btnAddSlot">+ Ajouter un créneau</button>
+  </section>
+
 </div>
 
-<button class="fab" id="fab" data-action="new-quest" style="display:none">＋</button>
-
-<nav class="tabbar">
-  <button class="tab active" data-action="tab" data-t="profile"><b>👤</b>Profil</button>
-  <button class="tab" data-action="tab" data-t="quests"><b>⚔️</b>Quêtes</button>
-  <button class="tab" data-action="tab" data-t="stats"><b>📊</b>Stats</button>
+<!-- ============ BARRE DE NAVIGATION ============ -->
+<nav class="tabs" id="tabs">
+  <button data-v="today" class="active"><span class="ico">☀</span>Aujourd'hui</button>
+  <button data-v="quests"><span class="ico">⚔</span>Quêtes</button>
+  <button data-v="profile"><span class="ico">★</span>Profil</button>
+  <button data-v="stats"><span class="ico">▤</span>Stats</button>
+  <button data-v="schedule"><span class="ico">◷</span>Planning</button>
 </nav>
 
-<div class="modal-bg" id="modal"><div class="sheet" id="sheet"></div></div>
-<div class="lu" id="levelup">
-  <div style="font-size:60px">✨</div><h1>LEVEL UP</h1>
-  <p id="luText"></p>
-  <button class="btn" style="width:auto;padding:12px 36px" data-action="close-lu">Continuer</button>
+<!-- ============ MODALE (contenu injecté par JS) ============ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal"></div>
 </div>
+
+<!-- ============ TOAST ============ -->
 <div class="toast" id="toast"></div>
-<input type="file" id="importFile" accept=".json" style="display:none">
 
 <script>
-(function(){
-'use strict';
-const $ = s => document.querySelector(s);
-const STORE = 'jdlv_v1';
+/* ================================================================
+   PARTIE 2 : DONNÉES, QUÊTES, XP, PÉNALITÉS
+   ================================================================ */
 
-/* ===== CATÉGORIES ===== */
-const CATS = {
-  sport:   {name:'Sport',        icon:'💪', color:'#FF453A'},
-  med:     {name:'Méditation',   icon:'🧘', color:'#BF5AF2'},
-  philo:   {name:'Philosophie',  icon:'📚', color:'#FF9F0A'},
-  elec:    {name:'Électronique', icon:'⚡', color:'#0A84FF'}
+/* ---------- CONSTANTES ---------- */
+var STORE_KEY = 'jdv_data_v2';
+var OLD_KEYS = ['jdv_data', 'jeudelavie', 'jdv', 'gameOfLife', 'lifeGame', 'jdv_data_v1'];
+var PENALTY = 5;
+
+var TYPES = {
+  journaliere: { label: 'Journalière', css: 't-journaliere' },
+  commune:     { label: 'Commune',     css: 't-commune' },
+  epique:      { label: 'Épique',      css: 't-epique' },
+  legendaire:  { label: 'Légendaire',  css: 't-legendaire' }
 };
-const OVERALL = {name:'Overall', icon:'🌟', color:'#30D158'};
-const DIFF = {
-  1:{label:'Facile', xp:10},
-  2:{label:'Moyen',  xp:25},
-  3:{label:'Dur',    xp:50}
+
+var STATS = {
+  sport:        { label: 'Sport',        color: 'var(--c-sport)' },
+  meditation:   { label: 'Méditation',   color: 'var(--c-meditation)' },
+  philosophie:  { label: 'Philosophie',  color: 'var(--c-philosophie)' },
+  electronique: { label: 'Électronique', color: 'var(--c-electronique)' }
 };
-const DAYS = ['L','M','M','J','V','S','D'];
 
-/* ===== DATES ===== */
-function pad(n){ return String(n).padStart(2,'0'); }
-function keyOf(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
-function todayKey(){ return keyOf(new Date()); }
-function parseKey(k){ const p=k.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
-function addDays(k, n){ const d=parseKey(k); d.setDate(d.getDate()+n); return keyOf(d); }
-function dow(k){ return (parseKey(k).getDay()+6)%7; } /* 0 = lundi */
-
-/* ===== NIVEAUX ===== */
-function xpForLevel(l){ return 100*l; }
-function levelInfo(total){
-  let lvl=1, left=Math.max(0,total);
-  while(left >= xpForLevel(lvl)){ left -= xpForLevel(lvl); lvl++; }
-  return {lvl:lvl, cur:left, need:xpForLevel(lvl)};
+/* ---------- OUTILS ---------- */
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
-/* ===== ÉTAT ===== */
-function freshState(){
-  return {
-    xp:{sport:0, med:0, philo:0, elec:0},
-    quests:[],
-    log:{},
-    created:todayKey(),
-    lastCheck:todayKey()
-  };
-}
-let state = freshState();
-let tab = 'profile';
-let filter = 'all';
-let statMode = 'day';
-
-function load(){
-  try{
-    const raw = localStorage.getItem(STORE);
-    if(raw){
-      const p = JSON.parse(raw);
-      state = Object.assign(freshState(), p);
-      state.xp = Object.assign({sport:0,med:0,philo:0,elec:0}, p.xp||{});
-      if(!Array.isArray(state.quests)) state.quests=[];
-      if(!state.log) state.log={};
-    }
-  }catch(e){ state = freshState(); }
-}
-function save(){
-  try{ localStorage.setItem(STORE, JSON.stringify(state)); }catch(e){}
+function pad2(n) {
+  return n < 10 ? '0' + n : '' + n;
 }
 
-function totalXP(){
-  return state.xp.sport + state.xp.med + state.xp.philo + state.xp.elec;
-}
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
-
-/* ===== QUÊTES ===== */
-function questActiveOn(q, key){
-  if(q.type==='daily') return true;
-  if(q.type==='weekly') return (q.days||[]).indexOf(dow(key)) !== -1;
-  if(q.type==='once') return q.date === key;
-  return false;
-}
-function isDone(q, key){
-  const l = state.log[key];
-  return !!(l && l.done && l.done.indexOf(q.id) !== -1);
-}
-function questsFor(key){
-  return state.quests.filter(q => !q.deleted && questActiveOn(q, key));
+function dateKey(d) {
+  d = d || new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
 }
 
-function toast(msg){
-  const t = $('#toast');
+function parseKey(k) {
+  var p = k.split('-');
+  return new Date(parseInt(p[0], 10), parseInt(p[1], 10) - 1, parseInt(p[2], 10));
+}
+
+function addDays(k, n) {
+  var d = parseKey(k);
+  d.setDate(d.getDate() + n);
+  return dateKey(d);
+}
+
+function esc(s) {
+  var div = document.createElement('div');
+  div.textContent = (s === undefined || s === null) ? '' : String(s);
+  return div.innerHTML;
+}
+
+function toast(msg) {
+  var t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toast._t);
-  toast._t = setTimeout(() => t.classList.remove('show'), 1800);
+  toast._t = setTimeout(function () { t.classList.remove('show'); }, 2400);
 }
 
-function ensureLog(key){
-  if(!state.log[key]) state.log[key] = {done:[], gain:{sport:0,med:0,philo:0,elec:0}};
-  return state.log[key];
-}
-function gainXP(key, cat){
-  const l = state.log[key];
-  return l && l.gain ? (l.gain[cat]||0) : 0;
-}
+/* ---------- ÉTAT ---------- */
+var state = null;
 
-/* ===== GAIN / PERTE D'XP ===== */
-function addXP(cat, amount, key){
-  const before = levelInfo(totalXP()).lvl;
-  const l = ensureLog(key);
-  const prev = state.xp[cat];
-  state.xp[cat] = Math.max(0, prev + amount);
-  l.gain[cat] = (l.gain[cat]||0) + (state.xp[cat] - prev);
-  const after = levelInfo(totalXP()).lvl;
-  if(after > before){
-    $('#luText').textContent = 'Tu passes niveau ' + after + ' !';
-    $('#levelup').classList.add('open');
-  }
-}
-
-function toggleQuest(id){
-  const q = state.quests.find(x => x.id === id);
-  if(!q) return;
-  const key = todayKey();
-  const l = ensureLog(key);
-  const i = l.done.indexOf(id);
-  const xp = DIFF[q.diff].xp;
-  if(i === -1){
-    l.done.push(id);
-    addXP(q.cat, xp, key);
-    toast('+' + xp + ' XP ' + CATS[q.cat].icon);
-  } else {
-    l.done.splice(i, 1);
-    addXP(q.cat, -xp, key);
-  }
-  save(); render();
-}
-
-/* ===== PÉNALITÉS (quêtes ratées les jours passés) ===== */
-function applyPenalties(){
-  const today = todayKey();
-  let from = state.lastCheck || today;
-  let lost = 0;
-  let guard = 0;
-  while(from < today && guard < 400){
-    guard++;
-    const l = ensureLog(from);
-    if(!l.penalized){
-      questsFor(from).forEach(q => {
-        if(q.createdOn && q.createdOn > from) return;
-        if(!isDone(q, from)){
-          const pen = Math.round(DIFF[q.diff].xp / 2);
-          const prev = state.xp[q.cat];
-          state.xp[q.cat] = Math.max(0, prev - pen);
-          lost += prev - state.xp[q.cat];
-          l.gain[q.cat] = (l.gain[q.cat]||0) - pen;
-        }
-      });
-      l.penalized = true;
-    }
-    from = addDays(from, 1);
-  }
-  state.lastCheck = today;
-  save();
-  if(lost > 0) setTimeout(() => toast('−' + lost + ' XP (quêtes manquées)'), 600);
-}
-/* ===== OUTILS D'AFFICHAGE ===== */
-function esc(s){
-  return String(s).split(String.fromCharCode(38)).join(String.fromCharCode(38)+'amp;').split(String.fromCharCode(60)).join(String.fromCharCode(38)+'lt;').split(String.fromCharCode(62)).join(String.fromCharCode(38)+'gt;').split(String.fromCharCode(34)).join(String.fromCharCode(38)+'quot;').split(String.fromCharCode(39)).join(String.fromCharCode(38)+'#39;');
-}
-function ring(pct, color, size){
-  const r = size/2 - 6, c = 2*Math.PI*r;
-  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'">'
-    + '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="#2c2c2e" stroke-width="6"/>'
-    + '<circle cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" '
-    + 'stroke-dasharray="'+c+'" stroke-dashoffset="'+(c*(1-pct))+'" transform="rotate(-90 '+(size/2)+' '+(size/2)+')"/></svg>';
-}
-
-/* ===== PROFIL ===== */
-function renderProfile(){
-  const tot = levelInfo(totalXP());
-  let h = '<div style="background:#1c1c1e;border-radius:20px;padding:18px;margin-bottom:12px;text-align:center">'
-    + '<div style="position:relative;width:140px;height:140px;margin:0 auto">' + ring(tot.cur/tot.need, OVERALL.color, 140)
-    + '<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">'
-    + '<small style="color:#98989f">'+OVERALL.icon+' Overall</small><b style="font-size:34px">'+tot.lvl+'</b></div></div>'
-    + '<div style="color:#98989f;font-size:13px;margin-top:8px">'+tot.cur+' / '+tot.need+' XP</div></div>';
-  Object.keys(CATS).forEach(k => {
-    const c = CATS[k], li = levelInfo(state.xp[k]);
-    h += '<div style="background:#1c1c1e;border-radius:16px;padding:14px;margin-bottom:10px">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center"><b>'+c.icon+' '+c.name+'</b>'
-      + '<span style="color:'+c.color+';font-weight:700">Niv. '+li.lvl+'</span></div>'
-      + '<div style="height:8px;background:#2c2c2e;border-radius:99px;margin-top:10px;overflow:hidden">'
-      + '<div style="height:100%;width:'+Math.round(li.cur/li.need*100)+'%;background:'+c.color+'"></div></div>'
-      + '<div style="color:#98989f;font-size:12px;margin-top:6px">'+li.cur+' / '+li.need+' XP</div></div>';
-  });
-  h += '<div style="display:flex;gap:10px;margin-top:14px">'
-    + '<button class="btn" style="flex:1;background:#2c2c2e;padding:12px;border-radius:12px" data-action="export">Exporter</button>'
-    + '<button class="btn" style="flex:1;background:#2c2c2e;padding:12px;border-radius:12px" data-action="import">Importer</button></div>';
-  $('#profileView').innerHTML = h;
-}
-
-/* ===== QUÊTES ===== */
-function renderQuests(){
-  const key = todayKey();
-  const list = questsFor(key);
-  const done = list.filter(q => isDone(q, key)).length;
-  let h = '<div class="summary"><div class="mini"><small>Aujourd\'hui</small><b>'+done+' / '+list.length+'</b></div>'
-    + '<div class="mini"><small>XP total</small><b>'+totalXP()+'</b></div></div>';
-  h += '<div class="seg"><button class="'+(filter==='all'?'active':'')+'" data-action="filter" data-f="all">Toutes</button>';
-  Object.keys(CATS).forEach(k => {
-    h += '<button class="'+(filter===k?'active':'')+'" data-action="filter" data-f="'+k+'">'+CATS[k].icon+'</button>';
-  });
-  h += '</div>';
-  const shown = list.filter(q => filter==='all' || q.cat===filter);
-  if(!shown.length) h += '<p style="color:#98989f;text-align:center;margin-top:30px">Aucune quête.<br>Appuie sur ＋ pour en créer une.</p>';
-  shown.forEach(q => {
-    const c = CATS[q.cat], d = isDone(q, key);
-    h += '<div style="display:flex;align-items:center;gap:12px;background:#1c1c1e;border-radius:16px;padding:14px;margin-bottom:8px;'+(d?'opacity:.5':'')+'">'
-      + '<button data-action="toggle" data-id="'+q.id+'" style="width:30px;height:30px;border-radius:50%;border:2px solid '+c.color+';background:'+(d?c.color:'transparent')+';color:#000;font-weight:900">'+(d?'✓':'')+'</button>'
-      + '<div style="flex:1"><div style="font-weight:600;'+(d?'text-decoration:line-through':'')+'">'+esc(q.title)+'</div>'
-      + '<small style="color:#98989f">'+c.icon+' '+c.name+' · '+DIFF[q.diff].label+' · +'+DIFF[q.diff].xp+' XP</small></div>'
-      + '<button data-action="del" data-id="'+q.id+'" style="color:#98989f;font-size:18px">🗑</button></div>';
-  });
-  $('#questsView').innerHTML = h;
-}
-
-/* ===== STATS ===== */
-function seriesFor(n){
-  const out = [], today = todayKey();
-  for(let i=n-1;i>=0;i--){
-    const k = addDays(today, -i);
-    const l = state.log[k];
-    let v = 0;
-    if(l && l.gain) Object.keys(CATS).forEach(c => v += (l.gain[c]||0));
-    out.push({k:k, v:v});
-  }
-  return out;
-}
-function chartSVG(data){
-  const W=320, H=140, max = Math.max(10, ...data.map(d => Math.abs(d.v)));
-  const bw = W/data.length;
-  let out = '<svg class="chart" viewBox="0 0 '+W+' '+(H+20)+'"><line x1="0" y1="'+(H/2)+'" x2="'+W+'" y2="'+(H/2)+'"/>';
-  data.forEach((d,i) => {
-    const hgt = Math.abs(d.v)/max*(H/2-4);
-    const y = d.v >= 0 ? H/2-hgt : H/2;
-    out += '<rect x="'+(i*bw+bw*0.15)+'" y="'+y+'" width="'+(bw*0.7)+'" height="'+Math.max(1,hgt)+'" rx="2" fill="'+(d.v>=0?'#30D158':'#FF453A')+'"/>';
-  });
-  return out + '</svg>';
-}
-function renderStats(){
-  const n = statMode==='day' ? 7 : statMode==='week' ? 28 : 90;
-  const data = seriesFor(n);
-  const sum = data.reduce((a,d) => a + d.v, 0);
-  let h = '<div class="seg">'
-    + '<button class="'+(statMode==='day'?'active':'')+'" data-action="smode" data-m="day">7 jours</button>'
-    + '<button class="'+(statMode==='week'?'active':'')+'" data-action="smode" data-m="week">28 jours</button>'
-    + '<button class="'+(statMode==='month'?'active':'')+'" data-action="smode" data-m="month">90 jours</button></div>';
-  h += '<div class="summary"><div class="mini"><small>XP sur la période</small><b>'+(sum>=0?'+':'')+sum+'</b></div>'
-    + '<div class="mini"><small>Niveau global</small><b>'+levelInfo(totalXP()).lvl+'</b></div></div>';
-  h += '<div style="background:#1c1c1e;border-radius:16px;padding:14px;margin-bottom:12px">'+chartSVG(data)+'</div>';
-  h += '<div style="background:#1c1c1e;border-radius:16px;padding:6px 14px">';
-  data.slice().reverse().slice(0,10).forEach(d => {
-    h += '<div class="hist"><span>'+parseKey(d.k).toLocaleDateString('fr-FR',{weekday:'short',day:'numeric',month:'short'})+'</span>'
-      + '<b style="color:'+(d.v>=0?'#30D158':'#FF453A')+'">'+(d.v>=0?'+':'')+d.v+' XP</b></div>';
-  });
-  h += '</div>';
-  $('#statsView').innerHTML = h;
-}
-
-/* ===== RENDU GLOBAL ===== */
-function render(){
-  const titles = {profile:'Profil', quests:'Quêtes', stats:'Stats'};
-  $('#pageTitle').textContent = titles[tab];
-  ['profile','quests','stats'].forEach(t => {
-    const v = $('#'+t+'View');
-    if(v) v.style.display = (t===tab) ? 'block' : 'none';
-  });
-  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('active', b.dataset.t===tab));
-  $('#fab').style.display = tab==='quests' ? 'block' : 'none';
-  if(tab==='profile') renderProfile();
-  if(tab==='quests') renderQuests();
-  if(tab==='stats') renderStats();
-}
-
-/* ===== CRÉATION D'UNE QUÊTE ===== */
-let draft = null;
-function openNew(){
-  draft = {title:'', cat:'sport', diff:2, type:'daily', days:[]};
-  drawSheet();
-  $('#modal').classList.add('open');
-}
-function drawSheet(){
-  let h = '<h2 style="margin:0 0 14px">Nouvelle quête</h2>'
-    + '<input id="qTitle" placeholder="Nom de la quête" value="'+esc(draft.title)+'" style="width:100%;padding:12px;border-radius:12px;border:0;background:#2c2c2e;margin-bottom:14px">'
-    + '<small style="color:#98989f">Catégorie</small><div class="seg" style="margin-top:6px">';
-  Object.keys(CATS).forEach(k => {
-    h += '<button class="'+(draft.cat===k?'active':'')+'" data-action="dcat" data-v="'+k+'">'+CATS[k].icon+'</button>';
-  });
-  h += '</div><small style="color:#98989f">Difficulté</small><div class="seg" style="margin-top:6px">';
-  [1,2,3].forEach(d => {
-    h += '<button class="'+(draft.diff===d?'active':'')+'" data-action="ddiff" data-v="'+d+'">'+DIFF[d].label+' (+'+DIFF[d].xp+')</button>';
-  });
-  h += '</div><small style="color:#98989f">Répétition</small><div class="seg" style="margin-top:6px">'
-    + '<button class="'+(draft.type==='daily'?'active':'')+'" data-action="dtype" data-v="daily">Chaque jour</button>'
-    + '<button class="'+(draft.type==='weekly'?'active':'')+'" data-action="dtype" data-v="weekly">Certains jours</button>'
-    + '<button class="'+(draft.type==='once'?'active':'')+'" data-action="dtype" data-v="once">Une fois</button></div>';
-  if(draft.type==='weekly'){
-    h += '<div class="seg">';
-    DAYS.forEach((d,i) => {
-      h += '<button class="'+(draft.days.indexOf(i)!==-1?'active':'')+'" data-action="dday" data-v="'+i+'">'+d+'</button>';
-    });
-    h += '</div>';
-  }
-  h += '<div style="display:flex;gap:10px;margin-top:10px">'
-    + '<button class="btn" style="flex:1;background:#2c2c2e;padding:12px;border-radius:12px" data-action="cancel">Annuler</button>'
-    + '<button class="btn" style="flex:1;background:#0A84FF;padding:12px;border-radius:12px;font-weight:700" data-action="create">Créer</button></div>';
-  $('#sheet').innerHTML = h;
-}
-function createQuest(){
-  const t = $('#qTitle') ? $('#qTitle').value.trim() : '';
-  if(!t){ toast('Donne un nom à la quête'); return; }
-  if(draft.type==='weekly' && !draft.days.length){ toast('Choisis au moins un jour'); return; }
-  state.quests.push({
-    id:uid(), title:t, cat:draft.cat, diff:draft.diff, type:draft.type,
-    days:draft.days.slice(), date:todayKey(), createdOn:todayKey()
-  });
-  save();
-  $('#modal').classList.remove('open');
-  render();
-}
-
-/* ===== EXPORT / IMPORT ===== */
-function doExport(){
-  const blob = new Blob([JSON.stringify(state)], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'jeu-de-la-vie.json';
-  a.click();
-}
-function doImport(file){
-  const r = new FileReader();
-  r.onload = () => {
-    try{
-      const p = JSON.parse(r.result);
-      state = Object.assign(freshState(), p);
-      save(); render(); toast('Import réussi');
-    }catch(e){ toast('Fichier invalide'); }
+function defaultState() {
+  return {
+    version: 2,
+    player: { name: 'Joueur' },
+    quests: [],        // {id,name,type,stat,xp,created,archived,doneOn,recurDays}
+    completions: {},   // dateKey -> [questId, ...] (journalières)
+    log: [],           // {id,ts,date,kind,questId,name,stat,xp}
+    lastPenaltyCheck: dateKey(),
+    schedule: { 0: [], 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
   };
-  r.readAsText(file);
 }
 
-/* ===== BOUTONS ===== */
-document.addEventListener('click', e => {
-  const el = e.target.closest('[data-action]');
-  if(!el) return;
-  const a = el.dataset.action;
-  if(a==='tab'){ tab = el.dataset.t; render(); }
-  else if(a==='filter'){ filter = el.dataset.f; render(); }
-  else if(a==='toggle'){ toggleQuest(el.dataset.id); }
-  else if(a==='del'){
-    if(confirm('Supprimer cette quête ?')){
-      const q = state.quests.find(x => x.id===el.dataset.id);
-      if(q) q.deleted = true;
-      save(); render();
+/* ---------- SAUVEGARDE ---------- */
+function save() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  } catch (e) {
+    toast('Erreur de sauvegarde');
+  }
+}
+
+function load() {
+  var raw = localStorage.getItem(STORE_KEY);
+  if (raw) {
+    try {
+      state = JSON.parse(raw);
+      repairState();
+      return;
+    } catch (e) { /* on tente la suite */ }
+  }
+  /* Pas de données v2 : on cherche une ancienne version */
+  for (var i = 0; i < OLD_KEYS.length; i++) {
+    var old = localStorage.getItem(OLD_KEYS[i]);
+    if (old) {
+      try {
+        var parsed = JSON.parse(old);
+        state = migrate(parsed);
+        save();
+        setTimeout(function () { toast('Anciennes données converties ✓'); }, 600);
+        return;
+      } catch (e2) { /* clé suivante */ }
     }
   }
-  else if(a==='smode'){ statMode = el.dataset.m; render(); }
-  else if(a==='new-quest'){ openNew(); }
-  else if(a==='dcat'){ draft.title = $('#qTitle').value; draft.cat = el.dataset.v; drawSheet(); }
-  else if(a==='ddiff'){ draft.title = $('#qTitle').value; draft.diff = +el.dataset.v; drawSheet(); }
-  else if(a==='dtype'){ draft.title = $('#qTitle').value; draft.type = el.dataset.v; drawSheet(); }
-  else if(a==='dday'){
-    draft.title = $('#qTitle').value;
-    const v = +el.dataset.v, i = draft.days.indexOf(v);
-    if(i===-1) draft.days.push(v); else draft.days.splice(i,1);
-    drawSheet();
+  state = defaultState();
+  save();
+}
+
+function repairState() {
+  var d = defaultState();
+  for (var k in d) {
+    if (state[k] === undefined) state[k] = d[k];
   }
-  else if(a==='cancel'){ $('#modal').classList.remove('open'); }
-  else if(a==='create'){ createQuest(); }
-  else if(a==='close-lu'){ $('#levelup').classList.remove('open'); }
-  else if(a==='export'){ doExport(); }
-  else if(a==='import'){ $('#importFile').click(); }
-});
-$('#importFile').addEventListener('change', e => {
-  if(e.target.files[0]) doImport(e.target.files[0]);
+  if (!state.player) state.player = { name: 'Joueur' };
+  for (var i = 0; i < 7; i++) {
+    if (!state.schedule[i]) state.schedule[i] = [];
+  }
+}
+
+/* ---------- CONVERSION DES ANCIENNES DONNÉES ----------
+   facile -> commune | dure -> epique | difficile -> legendaire
+   On garde le plus possible : nom, XP, centre d'intérêt, historique.
+------------------------------------------------------------------ */
+function convertOldType(t) {
+  t = String(t || '').toLowerCase();
+  if (t.indexOf('diff') === 0) return 'legendaire';
+  if (t.indexOf('dur') === 0) return 'epique';
+  if (t.indexOf('fac') === 0) return 'commune';
+  if (TYPES[t]) return t;
+  return 'commune';
+}
+
+function convertOldStat(s) {
+  s = String(s || '').toLowerCase();
+  s = s.replace(/é|è|ê/g, 'e');
+  if (STATS[s]) return s;
+  if (s.indexOf('spor') === 0) return 'sport';
+  if (s.indexOf('med') === 0) return 'meditation';
+  if (s.indexOf('phil') === 0) return 'philosophie';
+  if (s.indexOf('elec') === 0) return 'electronique';
+  return 'sport';
+}
+
+function migrate(old) {
+  var s = defaultState();
+  if (!old || typeof old !== 'object') return s;
+
+  /* Format déjà v2 */
+  if (old.version === 2) {
+    state = old;
+    repairState();
+    return state;
+  }
+
+  if (old.player && old.player.name) s.player.name = old.player.name;
+  else if (old.name) s.player.name = old.name;
+  else if (old.pseudo) s.player.name = old.pseudo;
+
+  var oldQuests = old.quests || old.quetes || [];
+  for (var i = 0; i < oldQuests.length; i++) {
+    var q = oldQuests[i] || {};
+    s.quests.push({
+      id: q.id || uid(),
+      name: q.name || q.nom || q.title || 'Quête',
+      type: convertOldType(q.difficulty || q.difficulte || q.type),
+      stat: convertOldStat(q.stat || q.category || q.categorie || q.interest),
+      xp: parseInt(q.xp, 10) || 10,
+      created: q.created || dateKey(),
+      archived: !!(q.archived || q.done || q.completed),
+      doneOn: q.doneOn || q.completedOn || null
+    });
+  }
+
+  var oldLog = old.log || old.history || old.historique || [];
+  for (var j = 0; j < oldLog.length; j++) {
+    var l = oldLog[j] || {};
+    s.log.push({
+      id: l.id || uid(),
+      ts: l.ts || l.time || Date.now(),
+      date: l.date || dateKey(),
+      kind: l.kind || (l.xp < 0 ? 'penalty' : 'quest'),
+      questId: l.questId || null,
+      name: l.name || l.nom || '',
+      stat: convertOldStat(l.stat || l.category),
+      xp: parseInt(l.xp, 10) || 0
+    });
+  }
+
+  /* Si l'ancienne appli stockait directement l'XP par stat sans historique */
+  var oldStats = old.stats || old.xp;
+  if (oldStats && typeof oldStats === 'object' && !s.log.length) {
+    for (var key in oldStats) {
+      var val = oldStats[key];
+      var amount = (typeof val === 'object') ? (parseInt(val.xp, 10) || 0) : (parseInt(val, 10) || 0);
+      if (amount > 0) {
+        s.log.push({
+          id: uid(), ts: Date.now(), date: dateKey(), kind: 'import',
+          questId: null, name: 'XP importée', stat: convertOldStat(key), xp: amount
+        });
+      }
+    }
+  }
+
+  return s;
+}
+
+/* ---------- EXPORT / IMPORT ---------- */
+function exportData() {
+  var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'jeu-de-la-vie-' + dateKey() + '.json';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function () {
+    URL.revokeObjectURL(a.href);
+    a.remove();
+  }, 500);
+  toast('Export terminé ✓');
+}
+
+function importData(file) {
+  var reader = new FileReader();
+  reader.onload = function () {
+    try {
+      var parsed = JSON.parse(reader.result);
+      var converted = migrate(parsed);
+      if (converted === state) { /* déjà v2, migrate a remplacé state */ }
+      else state = converted;
+      repairState();
+      save();
+      closeModal();
+      renderAll();
+      toast('Import réussi ✓');
+    } catch (e) {
+      toast('Fichier invalide');
+    }
+  };
+  reader.readAsText(file);
+}
+
+/* ---------- XP ---------- */
+function totalXP(stat) {
+  var sum = 0;
+  for (var i = 0; i < state.log.length; i++) {
+    var l = state.log[i];
+    if (!stat || l.stat === stat) sum += (l.xp || 0);
+  }
+  return Math.max(0, sum);
+}
+
+function addLog(kind, quest, xp) {
+  state.log.push({
+    id: uid(),
+    ts: Date.now(),
+    date: dateKey(),
+    kind: kind,
+    questId: quest ? quest.id : null,
+    name: quest ? quest.name : '',
+    stat: quest ? quest.stat : 'sport',
+    xp: xp
+  });
+}
+
+/* ---------- QUÊTES : ACCÈS ---------- */
+function getQuest(id) {
+  for (var i = 0; i < state.quests.length; i++) {
+    if (state.quests[i].id === id) return state.quests[i];
+  }
+  return null;
+}
+
+function dailyQuests() {
+  return state.quests.filter(function (q) {
+    return q.type === 'journaliere' && !q.archived;
+  });
+}
+
+function isDailyDone(questId, key) {
+  var arr = state.completions[key] || [];
+  return arr.indexOf(questId) !== -1;
+}
+
+/* ---------- QUÊTES : ACTIONS ---------- */
+function createQuest(data) {
+  var q = {
+    id: uid(),
+    name: data.name,
+    type: data.type,
+    stat: data.stat,
+    xp: Math.max(0, parseInt(data.xp, 10) || 0),
+    created: dateKey(),
+    archived: false,
+    doneOn: null
+  };
+  state.quests.push(q);
+  save();
+  return q;
+}
+
+function updateQuest(id, data) {
+  var q = getQuest(id);
+  if (!q) return;
+  q.name = data.name;
+  q.type = data.type;
+  q.stat = data.stat;
+  q.xp = Math.max(0, parseInt(data.xp, 10) || 0);
+  save();
+}
+
+function deleteQuest(id) {
+  state.quests = state.quests.filter(function (q) { return q.id !== id; });
+  save();
+}
+
+/* Cocher / décocher une journalière pour un jour donné */
+function toggleDaily(questId, key) {
+  var q = getQuest(questId);
+  if (!q) return;
+  if (!state.completions[key]) state.completions[key] = [];
+  var arr = state.completions[key];
+  var idx = arr.indexOf(questId);
+
+  if (idx === -1) {
+    arr.push(questId);
+    state.log.push({
+      id: uid(), ts: Date.now(), date: key, kind: 'daily',
+      questId: q.id, name: q.name, stat: q.stat, xp: q.xp
+    });
+    toast('+' + q.xp + ' XP · ' + STATS[q.stat].label);
+  } else {
+    arr.splice(idx, 1);
+    state.log = state.log.filter(function (l) {
+      return !(l.kind === 'daily' && l.questId === questId && l.date === key);
+    });
+    toast('Quête décochée');
+  }
+  save();
+}
+
+/* Terminer une quête commune / épique / légendaire -> archivée */
+function completeQuest(id) {
+  var q = getQuest(id);
+  if (!q || q.archived) return;
+  q.archived = true;
+  q.doneOn = dateKey();
+  state.log.push({
+    id: uid(), ts: Date.now(), date: dateKey(), kind: 'quest',
+    questId: q.id, name: q.name, stat: q.stat, xp: q.xp
+  });
+  save();
+  toast('+' + q.xp + ' XP · ' + STATS[q.stat].label);
+}
+
+/* Restaurer une quête archivée (retire l'XP gagnée) */
+function restoreQuest(id) {
+  var q = getQuest(id);
+  if (!q) return;
+  q.archived = false;
+  q.doneOn = null;
+  state.log = state.log.filter(function (l) {
+    return !(l.kind === 'quest' && l.questId === id);
+  });
+  save();
+  toast('Quête restaurée');
+}
+
+/* ---------- PÉNALITÉ -5 XP (journalières uniquement) ----------
+   Appliquée pour chaque jour PASSÉ (jamais aujourd'hui) où une
+   journalière existante n'a pas été cochée.
+------------------------------------------------------------------ */
+function applyPenalties() {
+  var today = dateKey();
+  var from = state.lastPenaltyCheck || today;
+  if (from >= today) return;
+
+  var cursor = from;
+  var applied = 0;
+  var guard = 0;
+
+  while (cursor < today && guard < 400) {
+    var quests = state.quests.filter(function (q) {
+      return q.type === 'journaliere' && q.created <= cursor && !q.archived;
+    });
+    for (var i = 0; i < quests.length; i++) {
+      var q = quests[i];
+      if (!isDailyDone(q.id, cursor)) {
+        var already = state.log.some(function (l) {
+          return l.kind === 'penalty' && l.questId === q.id && l.date === cursor;
+        });
+        if (!already) {
+          state.log.push({
+            id: uid(), ts: Date.now(), date: cursor, kind: 'penalty',
+            questId: q.id, name: q.name, stat: q.stat, xp: -PENALTY
+          });
+          applied++;
+        }
+      }
+    }
+    cursor = addDays(cursor, 1);
+    guard++;
+  }
+
+  state.lastPenaltyCheck = today;
+  save();
+  if (applied > 0) {
+    setTimeout(function () {
+      toast('-' + (applied * PENALTY) + ' XP (' + applied + ' journalière' + (applied > 1 ? 's' : '') + ' manquée' + (applied > 1 ? 's' : '') + ')');
+    }, 900);
+  }
+}
+
+/* ---------- MODALE ---------- */
+function openModal(html) {
+  document.getElementById('modal').innerHTML = html;
+  document.getElementById('modalBg').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modalBg').classList.remove('show');
+}
+
+document.getElementById('modalBg').addEventListener('click', function (e) {
+  if (e.target === this) closeModal();
 });
 
-/* ===== DÉMARRAGE ===== */
+/* ---------- FORMULAIRE DE QUÊTE ---------- */
+var formState = { type: 'journaliere', stat: 'sport', editId: null };
+
+function questForm(editId, presetType) {
+  var q = editId ? getQuest(editId) : null;
+  formState.editId = editId || null;
+  formState.type = q ? q.type : (presetType || 'journaliere');
+  formState.stat = q ? q.stat : 'sport';
+
+  var typeChips = '';
+  for (var t in TYPES) {
+    typeChips += '<button class="chip' + (t === formState.type ? ' on' : '') +
+      '" data-type="' + t + '">' + TYPES[t].label + '</button>';
+  }
+  var statChips = '';
+  for (var s in STATS) {
+    statChips += '<button class="chip' + (s === formState.stat ? ' on' : '') +
+      '" data-stat="' + s + '">' + STATS[s].label + '</button>';
+  }
+
+  openModal(
+    '<h2>' + (q ? 'Modifier la quête' : 'Nouvelle quête') + '</h2>' +
+    '<label class="field"><span>Nom</span>' +
+      '<input type="text" id="fName" placeholder="Ex : 30 min de course" value="' + (q ? esc(q.name).replace(/"/g, '"') : '') + '"></label>' +
+    '<label class="field"><span>Type</span><div class="chips" id="fTypes">' + typeChips + '</div></label>' +
+    '<label class="field"><span>Centre d\'intérêt</span><div class="chips" id="fStats">' + statChips + '</div></label>' +
+    '<label class="field"><span>XP gagnée</span>' +
+      '<input type="number" id="fXp" min="0" inputmode="numeric" placeholder="Ex : 25" value="' + (q ? q.xp : '') + '"></label>' +
+    '<div class="small muted" id="fHint" style="margin-bottom:14px"></div>' +
+    '<div class="btn-row">' +
+      '<button class="btn secondary" id="fCancel">Annuler</button>' +
+      '<button class="btn" id="fSave">Enregistrer</button>' +
+    '</div>' +
+    (q ? '<button class="btn danger" id="fDelete" style="margin-top:10px">Supprimer la quête</button>' : '')
+  );
+
+  updateFormHint();
+
+  document.getElementById('fTypes').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-type]');
+    if (!b) return;
+    formState.type = b.getAttribute('data-type');
+    var all = this.querySelectorAll('.chip');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+    b.classList.add('on');
+    updateFormHint();
+  });
+
+  document.getElementById('fStats').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-stat]');
+    if (!b) return;
+    formState.stat = b.getAttribute('data-stat');
+    var all = this.querySelectorAll('.chip');
+    for (var i = 0; i < all.length; i++) all[i].classList.remove('on');
+    b.classList.add('on');
+  });
+
+  document.getElementById('fCancel').onclick = closeModal;
+
+  document.getElementById('fSave').onclick = function () {
+    var name = document.getElementById('fName').value.trim();
+    var xp = document.getElementById('fXp').value;
+    if (!name) { toast('Donne un nom à la quête'); return; }
+    if (xp === '' || isNaN(parseInt(xp, 10))) { toast('Indique l\'XP'); return; }
+    var data = { name: name, type: formState.type, stat: formState.stat, xp: xp };
+    if (formState.editId) updateQuest(formState.editId, data);
+    else createQuest(data);
+    closeModal();
+    renderAll();
+    toast(formState.editId ? 'Quête modifiée ✓' : 'Quête créée ✓');
+  };
+
+  if (q) {
+    document.getElementById('fDelete').onclick = function () {
+      if (confirm('Supprimer cette quête ?')) {
+        deleteQuest(q.id);
+        closeModal();
+        renderAll();
+        toast('Quête supprimée');
+      }
+    };
+  }
+}
+
+function updateFormHint() {
+  var h = document.getElementById('fHint');
+  if (!h) return;
+  if (formState.type === 'journaliere') {
+    h.textContent = 'Journalière : s\'affiche chaque jour. -' + PENALTY + ' XP si elle n\'est pas faite.';
+  } else {
+    h.textContent = TYPES[formState.type].label + ' : à faire quand tu veux, aucune pénalité. Archivée une fois terminée.';
+  }
+}
+
+/* ---------- RÉGLAGES (nom, export, import) ---------- */
+function openSettings() {
+  openModal(
+    '<h2>Réglages</h2>' +
+    '<label class="field"><span>Ton nom</span>' +
+      '<input type="text" id="sName" value="' + esc(state.player.name).replace(/"/g, '"') + '"></label>' +
+    '<button class="btn" id="sSaveName" style="margin-bottom:10px">Enregistrer le nom</button>' +
+    '<hr class="sep">' +
+    '<h3>Sauvegarde</h3>' +
+    '<button class="btn secondary" id="sExport" style="margin-bottom:10px">Exporter mes données</button>' +
+    '<button class="btn secondary" id="sImport">Importer un fichier</button>' +
+    '<input type="file" id="sFile" accept=".json,application/json" style="display:none">' +
+    '<hr class="sep">' +
+    '<button class="btn danger" id="sReset">Tout réinitialiser</button>' +
+    '<button class="btn secondary" id="sClose" style="margin-top:10px">Fermer</button>'
+  );
+
+  document.getElementById('sSaveName').onclick = function () {
+    var n = document.getElementById('sName').value.trim();
+    if (n) { state.player.name = n; save(); renderAll(); toast('Nom enregistré ✓'); }
+  };
+  document.getElementById('sExport').onclick = exportData;
+  document.getElementById('sImport').onclick = function () {
+    document.getElementById('sFile').click();
+  };
+  document.getElementById('sFile').onchange = function () {
+    if (this.files && this.files[0]) importData(this.files[0]);
+  };
+  document.getElementById('sReset').onclick = function () {
+    if (confirm('Tout effacer ? Fais un export avant !')) {
+      state = defaultState();
+      save();
+      closeModal();
+      renderAll();
+      toast('Données réinitialisées');
+    }
+  };
+  document.getElementById('sClose').onclick = closeModal;
+}
+/* ================================================================
+   PARTIE 3 : NIVEAUX, AFFICHAGE, GRAPHIQUES, DÉMARRAGE
+   ================================================================ */
+
+/* ---------- NIVEAUX & TITRES ----------
+   Niveau n -> n+1 coûte 100 + 50*(n-1) XP (de plus en plus dur).
+------------------------------------------------------------------ */
+function levelFromXP(xp) {
+  var lvl = 1;
+  var need = 100;
+  var left = xp;
+  while (left >= need) {
+    left -= need;
+    lvl++;
+    need = 100 + 50 * (lvl - 1);
+  }
+  return { level: lvl, into: left, need: need };
+}
+
+function titleForLevel(l) {
+  if (l >= 50) return 'Légende vivante';
+  if (l >= 40) return 'Grand maître';
+  if (l >= 30) return 'Maître';
+  if (l >= 25) return 'Expert';
+  if (l >= 20) return 'Vétéran';
+  if (l >= 15) return 'Confirmé';
+  if (l >= 10) return 'Adepte';
+  if (l >= 6)  return 'Initié';
+  if (l >= 3)  return 'Apprenti';
+  return 'Novice';
+}
+
+/* ---------- OUTILS D'AFFICHAGE ---------- */
+var MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+var JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
+
+function el(id) { return document.getElementById(id); }
+
+function shortDate(key) {
+  var d = parseKey(key);
+  return d.getDate() + ' ' + MOIS[d.getMonth()].slice(0, 4) + (MOIS[d.getMonth()].length > 4 ? '.' : '');
+}
+
+function pill(q) {
+  return '<span class="tag ' + TYPES[q.type].css + '">' + TYPES[q.type].label + '</span>';
+}
+
+function statDot(stat) {
+  return '<span class="dot" style="background:' + STATS[stat].color + '"></span>';
+}
+
+/* ---------- ONGLET : AUJOURD'HUI ---------- */
+var viewDay = dateKey();
+
+function renderToday() {
+  var today = dateKey();
+  var d = parseKey(viewDay);
+  var isToday = (viewDay === today);
+  var titleEl = el('todayTitle');
+  if (titleEl) {
+    titleEl.textContent = isToday ? "Aujourd'hui" :
+      JOURS[d.getDay()].charAt(0).toUpperCase() + JOURS[d.getDay()].slice(1) + ' ' + d.getDate();
+  }
+
+  var list = el('dailyList');
+  var quests = state.quests.filter(function (q) {
+    return q.type === 'journaliere' && !q.archived && q.created <= viewDay;
+  });
+
+  if (!quests.length) {
+    list.innerHTML = '<div class="empty">Aucune quête journalière.<br>Crée-en une avec le bouton +</div>';
+  } else {
+    var html = '';
+    var done = 0;
+    for (var i = 0; i < quests.length; i++) {
+      var q = quests[i];
+      var ok = isDailyDone(q.id, viewDay);
+      if (ok) done++;
+      html += '<div class="row' + (ok ? ' done' : '') + '" data-id="' + q.id + '">' +
+        '<button class="check' + (ok ? ' on' : '') + '" data-check="' + q.id + '">' + (ok ? '✓' : '') + '</button>' +
+        '<div class="grow" data-edit="' + q.id + '">' +
+          '<div class="r-title">' + esc(q.name) + '</div>' +
+          '<div class="r-sub">' + statDot(q.stat) + STATS[q.stat].label + '</div>' +
+        '</div>' +
+        '<div class="xp">+' + q.xp + '</div>' +
+      '</div>';
+    }
+    list.innerHTML = html;
+    var prog = el('dayProgress');
+    if (prog) prog.textContent = done + ' / ' + quests.length;
+    var bar = el('dayBar');
+    if (bar) bar.style.width = Math.round(done / quests.length * 100) + '%';
+  }
+
+  if (!quests.length) {
+    var p2 = el('dayProgress'); if (p2) p2.textContent = '0 / 0';
+    var b2 = el('dayBar'); if (b2) b2.style.width = '0%';
+  }
+
+  /* Créneaux du jour (planning) */
+  var sl = el('todaySchedule');
+  if (sl) {
+    var slots = (state.schedule[d.getDay()] || []).slice().sort(function (a, b) {
+      return (a.start || '').localeCompare(b.start || '');
+    });
+    if (!slots.length) {
+      sl.innerHTML = '<div class="empty small">Rien de prévu ce jour.</div>';
+    } else {
+      var sh = '';
+      for (var k = 0; k < slots.length; k++) {
+        sh += '<div class="row"><div class="time">' + esc(slots[k].start) + '</div>' +
+          '<div class="grow"><div class="r-title">' + esc(slots[k].label) + '</div>' +
+          (slots[k].end ? '<div class="r-sub">jusqu\'à ' + esc(slots[k].end) + '</div>' : '') +
+          '</div></div>';
+      }
+      sl.innerHTML = sh;
+    }
+  }
+}
+
+/* ---------- ONGLET : QUÊTES ---------- */
+var questFilter = 'commune';
+
+function renderQuests() {
+  var seg = el('questSeg');
+  if (seg) {
+    var btns = seg.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', btns[i].getAttribute('data-f') === questFilter);
+    }
+  }
+
+  var list = el('questList');
+  var items;
+  if (questFilter === 'archives') {
+    items = state.quests.filter(function (q) { return q.archived; });
+    items.sort(function (a, b) { return (b.doneOn || '').localeCompare(a.doneOn || ''); });
+  } else {
+    items = state.quests.filter(function (q) { return q.type === questFilter && !q.archived; });
+  }
+
+  if (!items.length) {
+    list.innerHTML = '<div class="empty">' +
+      (questFilter === 'archives' ? 'Aucune quête archivée.' : 'Aucune quête ici.<br>Crée-en une avec le bouton +') +
+      '</div>';
+    return;
+  }
+
+  var html = '';
+  for (var j = 0; j < items.length; j++) {
+    var q = items[j];
+    if (questFilter === 'archives') {
+      html += '<div class="row done" data-id="' + q.id + '">' +
+        '<div class="grow">' +
+          '<div class="r-title">' + esc(q.name) + '</div>' +
+          '<div class="r-sub">' + pill(q) + statDot(q.stat) + STATS[q.stat].label +
+          (q.doneOn ? ' · ' + shortDate(q.doneOn) : '') + '</div>' +
+        '</div>' +
+        '<div class="xp">+' + q.xp + '</div>' +
+        '<button class="mini" data-restore="' + q.id + '">↺</button>' +
+      '</div>';
+    } else {
+      html += '<div class="row" data-id="' + q.id + '">' +
+        '<button class="check" data-complete="' + q.id + '"></button>' +
+        '<div class="grow" data-edit="' + q.id + '">' +
+          '<div class="r-title">' + esc(q.name) + '</div>' +
+          '<div class="r-sub">' + pill(q) + statDot(q.stat) + STATS[q.stat].label + '</div>' +
+        '</div>' +
+        '<div class="xp">+' + q.xp + '</div>' +
+      '</div>';
+    }
+  }
+  list.innerHTML = html;
+}
+
+/* ---------- ONGLET : PROFIL ---------- */
+function renderProfile() {
+  var overallXP = totalXP();
+  var o = levelFromXP(overallXP);
+  var box = el('profileBox');
+
+  var html = '<div class="card hero">' +
+    '<div class="hero-name">' + esc(state.player.name) + '</div>' +
+    '<div class="hero-title">' + titleForLevel(o.level) + '</div>' +
+    '<div class="hero-lvl" style="color:var(--c-overall)">Niveau ' + o.level + '</div>' +
+    '<div class="bar"><div class="fill" style="width:' + Math.round(o.into / o.need * 100) + '%;background:var(--c-overall)"></div></div>' +
+    '<div class="small muted">' + o.into + ' / ' + o.need + ' XP · ' + overallXP + ' XP au total</div>' +
+  '</div>';
+
+  for (var s in STATS) {
+    var xp = totalXP(s);
+    var L = levelFromXP(xp);
+    html += '<div class="card stat">' +
+      '<div class="stat-top">' +
+        '<div><div class="stat-name">' + statDot(s) + STATS[s].label + '</div>' +
+        '<div class="small muted">' + titleForLevel(L.level) + '</div></div>' +
+        '<div class="stat-lvl" style="color:' + STATS[s].color + '">Niv. ' + L.level + '</div>' +
+      '</div>' +
+      '<div class="bar"><div class="fill" style="width:' + Math.round(L.into / L.need * 100) + '%;background:' + STATS[s].color + '"></div></div>' +
+      '<div class="small muted">' + L.into + ' / ' + L.need + ' XP · ' + xp + ' au total</div>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+/* ---------- ONGLET : STATS (GRAPHIQUE) ---------- */
+var chartRange = 14;
+
+function dailyTotals(days) {
+  /* XP cumulée par centre d'intérêt, jour par jour sur les N derniers jours */
+  var today = dateKey();
+  var startKey = addDays(today, -(days - 1));
+
+  var base = {};
+  var k;
+  for (k in STATS) base[k] = 0;
+
+  /* XP avant la fenêtre */
+  for (var i = 0; i < state.log.length; i++) {
+    var l = state.log[i];
+    if (l.date < startKey && base[l.stat] !== undefined) base[l.stat] += l.xp;
+  }
+
+  var series = {};
+  for (k in STATS) series[k] = [];
+  var labels = [];
+  var running = {};
+  for (k in STATS) running[k] = Math.max(0, base[k]);
+
+  for (var d = 0; d < days; d++) {
+    var key = addDays(startKey, d);
+    labels.push(key);
+    for (var j = 0; j < state.log.length; j++) {
+      var e = state.log[j];
+      if (e.date === key && running[e.stat] !== undefined) running[e.stat] += e.xp;
+    }
+    for (k in STATS) {
+      if (running[k] < 0) running[k] = 0;
+      series[k].push(running[k]);
+    }
+  }
+  return { labels: labels, series: series };
+}
+
+function drawChart() {
+  var canvas = el('chart');
+  if (!canvas) return;
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth || 320;
+  var h = 220;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.height = h + 'px';
+  var ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  var data = dailyTotals(chartRange);
+  var padL = 36, padR = 10, padT = 10, padB = 24;
+  var cw = w - padL - padR;
+  var ch = h - padT - padB;
+
+  var max = 10;
+  var k;
+  for (k in STATS) {
+    for (var i = 0; i < data.series[k].length; i++) {
+      if (data.series[k][i] > max) max = data.series[k][i];
+    }
+  }
+  max = Math.ceil(max / 10) * 10;
+
+  /* grille */
+  ctx.strokeStyle = '#2c2c2e';
+  ctx.fillStyle = '#8e8e93';
+  ctx.font = '10px -apple-system, sans-serif';
+  ctx.lineWidth = 1;
+  for (var g = 0; g <= 4; g++) {
+    var y = padT + ch - (ch * g / 4);
+    ctx.beginPath();
+    ctx.moveTo(padL, y);
+    ctx.lineTo(w - padR, y);
+    ctx.stroke();
+    ctx.textAlign = 'right';
+    ctx.fillText(Math.round(max * g / 4), padL - 6, y + 3);
+  }
+
+  /* axe X */
+  ctx.textAlign = 'center';
+  var step = Math.max(1, Math.floor(chartRange / 5));
+  for (var x = 0; x < data.labels.length; x += step) {
+    var px = padL + (cw * x / Math.max(1, data.labels.length - 1));
+    ctx.fillText(shortDate(data.labels[x]), px, h - 6);
+  }
+
+  /* courbes */
+  for (k in STATS) {
+    var color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--c-' + k).trim() || '#fff';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    for (var p = 0; p < data.series[k].length; p++) {
+      var xx = padL + (cw * p / Math.max(1, data.series[k].length - 1));
+      var yy = padT + ch - (ch * data.series[k][p] / max);
+      if (p === 0) ctx.moveTo(xx, yy);
+      else ctx.lineTo(xx, yy);
+    }
+    ctx.stroke();
+  }
+
+  var lg = el('chartLegend');
+  if (lg) {
+    var lh = '';
+    for (k in STATS) {
+      lh += '<span class="lg">' + statDot(k) + STATS[k].label + '</span>';
+    }
+    lg.innerHTML = lh;
+  }
+}
+
+function renderStats() {
+  var seg = el('rangeSeg');
+  if (seg) {
+    var btns = seg.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', parseInt(btns[i].getAttribute('data-r'), 10) === chartRange);
+    }
+  }
+  drawChart();
+
+  var logs = state.log.slice().sort(function (a, b) { return b.ts - a.ts; }).slice(0, 25);
+  var box = el('historyList');
+  if (!logs.length) {
+    box.innerHTML = '<div class="empty small">Pas encore d\'historique.</div>';
+    return;
+  }
+  var html = '';
+  for (var j = 0; j < logs.length; j++) {
+    var l = logs[j];
+    var neg = l.xp < 0;
+    var label = l.kind === 'penalty' ? 'Manquée : ' + l.name : (l.name || 'XP');
+    html += '<div class="row">' +
+      '<div class="grow"><div class="r-title">' + esc(label) + '</div>' +
+      '<div class="r-sub">' + statDot(l.stat) + (STATS[l.stat] ? STATS[l.stat].label : '') + ' · ' + shortDate(l.date) + '</div></div>' +
+      '<div class="xp' + (neg ? ' neg' : '') + '">' + (neg ? '' : '+') + l.xp + '</div>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+/* ---------- ONGLET : PLANNING ---------- */
+var schedDay = (new Date()).getDay();
+
+function renderSchedule() {
+  var seg = el('schedSeg');
+  if (seg) {
+    var btns = seg.querySelectorAll('button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle('active', parseInt(btns[i].getAttribute('data-d'), 10) === schedDay);
+    }
+  }
+  var slots = (state.schedule[schedDay] || []).slice().sort(function (a, b) {
+    return (a.start || '').localeCompare(b.start || '');
+  });
+  var box = el('schedList');
+  if (!slots.length) {
+    box.innerHTML = '<div class="empty">Aucun créneau ce jour.</div>';
+    return;
+  }
+  var html = '';
+  for (var j = 0; j < slots.length; j++) {
+    var s = slots[j];
+    html += '<div class="row">' +
+      '<div class="time">' + esc(s.start) + '</div>' +
+      '<div class="grow"><div class="r-title">' + esc(s.label) + '</div>' +
+      (s.end ? '<div class="r-sub">jusqu\'à ' + esc(s.end) + '</div>' : '') + '</div>' +
+      '<button class="mini" data-slotdel="' + s.id + '">✕</button>' +
+    '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function slotForm() {
+  openModal(
+    '<h2>Nouveau créneau</h2>' +
+    '<label class="field"><span>Activité</span>' +
+      '<input type="text" id="slLabel" placeholder="Ex : Salle de sport"></label>' +
+    '<div class="btn-row">' +
+      '<label class="field" style="flex:1"><span>Début</span><input type="time" id="slStart"></label>' +
+      '<label class="field" style="flex:1"><span>Fin (optionnel)</span><input type="time" id="slEnd"></label>' +
+    '</div>' +
+    '<div class="btn-row">' +
+      '<button class="btn secondary" id="slCancel">Annuler</button>' +
+      '<button class="btn" id="slSave">Ajouter</button>' +
+    '</div>'
+  );
+  el('slCancel').onclick = closeModal;
+  el('slSave').onclick = function () {
+    var label = el('slLabel').value.trim();
+    var start = el('slStart').value;
+    var end = el('slEnd').value;
+    if (!label || !start) { toast('Nom et heure de début requis'); return; }
+    state.schedule[schedDay].push({ id: uid(), label: label, start: start, end: end });
+    save();
+    closeModal();
+    renderAll();
+    toast('Créneau ajouté ✓');
+  };
+}
+
+/* ---------- AFFICHAGE GLOBAL ---------- */
+var currentView = 'today';
+
+function showView(v) {
+  currentView = v;
+  var views = document.querySelectorAll('.view');
+  for (var i = 0; i < views.length; i++) views[i].classList.remove('active');
+  var target = el('view-' + v);
+  if (target) target.classList.add('active');
+  var tabs = document.querySelectorAll('#tabs button');
+  for (var j = 0; j < tabs.length; j++) {
+    tabs[j].classList.toggle('active', tabs[j].getAttribute('data-v') === v);
+  }
+  renderAll();
+  window.scrollTo(0, 0);
+}
+
+function renderAll() {
+  var dateEl = el('headDate');
+  if (dateEl) {
+    var n = new Date();
+    dateEl.textContent = JOURS[n.getDay()].charAt(0).toUpperCase() + JOURS[n.getDay()].slice(1) +
+      ' ' + n.getDate() + ' ' + MOIS[n.getMonth()];
+  }
+  renderToday();
+  renderQuests();
+  renderProfile();
+  renderStats();
+  renderSchedule();
+}
+
+/* ---------- ÉVÉNEMENTS ---------- */
+document.getElementById('tabs').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-v]');
+  if (b) showView(b.getAttribute('data-v'));
+});
+
+/* Aujourd'hui : cocher / modifier / jour précédent-suivant */
+el('dailyList').addEventListener('click', function (e) {
+  var c = e.target.closest('[data-check]');
+  if (c) {
+    toggleDaily(c.getAttribute('data-check'), viewDay);
+    renderAll();
+    return;
+  }
+  var ed = e.target.closest('[data-edit]');
+  if (ed) questForm(ed.getAttribute('data-edit'));
+});
+
+if (el('dayPrev')) el('dayPrev').onclick = function () {
+  viewDay = addDays(viewDay, -1);
+  renderToday();
+};
+if (el('dayNext')) el('dayNext').onclick = function () {
+  if (viewDay < dateKey()) { viewDay = addDays(viewDay, 1); renderToday(); }
+};
+
+/* Quêtes : filtre, terminer, restaurer, modifier */
+if (el('questSeg')) el('questSeg').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-f]');
+  if (!b) return;
+  questFilter = b.getAttribute('data-f');
+  renderQuests();
+});
+
+el('questList').addEventListener('click', function (e) {
+  var c = e.target.closest('[data-complete]');
+  if (c) { completeQuest(c.getAttribute('data-complete')); renderAll(); return; }
+  var r = e.target.closest('[data-restore]');
+  if (r) { restoreQuest(r.getAttribute('data-restore')); renderAll(); return; }
+  var ed = e.target.closest('[data-edit]');
+  if (ed) questForm(ed.getAttribute('data-edit'));
+});
+
+/* Stats : période */
+if (el('rangeSeg')) el('rangeSeg').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-r]');
+  if (!b) return;
+  chartRange = parseInt(b.getAttribute('data-r'), 10);
+  renderStats();
+});
+
+/* Planning : jour, ajout, suppression */
+if (el('schedSeg')) el('schedSeg').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-d]');
+  if (!b) return;
+  schedDay = parseInt(b.getAttribute('data-d'), 10);
+  renderSchedule();
+});
+if (el('btnAddSlot')) el('btnAddSlot').onclick = slotForm;
+el('schedList').addEventListener('click', function (e) {
+  var d = e.target.closest('[data-slotdel]');
+  if (!d) return;
+  var id = d.getAttribute('data-slotdel');
+  state.schedule[schedDay] = state.schedule[schedDay].filter(function (s) { return s.id !== id; });
+  save();
+  renderSchedule();
+  renderToday();
+});
+
+/* Boutons d'ajout et réglages */
+var addBtns = document.querySelectorAll('[data-add]');
+for (var ab = 0; ab < addBtns.length; ab++) {
+  addBtns[ab].addEventListener('click', function () {
+    var t = this.getAttribute('data-add');
+    questForm(null, TYPES[t] ? t : (currentView === 'quests' ? questFilter : 'journaliere'));
+  });
+}
+if (el('btnAdd')) el('btnAdd').onclick = function () {
+  questForm(null, currentView === 'quests' && questFilter !== 'archives' ? questFilter : 'journaliere');
+};
+if (el('btnSettings')) el('btnSettings').onclick = openSettings;
+
+window.addEventListener('resize', function () {
+  if (currentView === 'stats') drawChart();
+});
+
+/* ---------- DÉMARRAGE ---------- */
 load();
 applyPenalties();
-render();
-})();
+renderAll();
+
+/* Si l'appli reste ouverte et que minuit passe */
+setInterval(function () {
+  var today = dateKey();
+  if (state.lastPenaltyCheck !== today) {
+    if (viewDay === state.lastPenaltyCheck) viewDay = today;
+    applyPenalties();
+    renderAll();
+  }
+}, 60000);
 </script>
 </body>
 </html>
