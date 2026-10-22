@@ -77,6 +77,17 @@ nav button.on{color:var(--txt)}
 #sheet h2{margin:0 0 4px;font-size:18px}
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:99px;font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.on{opacity:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;padding:9px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13px;color:var(--mut)}
+.seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.slot{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.slot .t{font-size:13px;color:var(--mut);min-width:96px}
+.slot .n{flex:1}
+.slot .x{color:var(--bad);font-size:18px;padding:0 6px}
+.sleeprow{display:flex;align-items:center;gap:10px}
+.sleeprow input{width:90px}
+.sleeprow .res{flex:1;font-size:13px;color:var(--mut);text-align:right}
 </style>
 </head>
 <body>
@@ -114,8 +125,21 @@ nav button.on{color:var(--txt)}
     <div class="card"><h3>Résumé</h3><div id="sumBox"></div></div>
   </section>
   <section class="view" id="v-plan">
-    <div class="card"><h3>Sommeil</h3><div id="sleepBox"></div></div>
-    <div class="card"><h3>Créneaux</h3><div class="seg" id="schedDays"></div><div id="schedList"></div>
+    <div class="view" id="v-plan">
+  <div class="card">
+    <h3 style="margin:0 0 4px">Sommeil</h3>
+    <div style="font-size:12px;color:var(--mut);margin-bottom:10px">Heures de sommeil par nuit</div>
+    <div id="sleepBox"></div>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <h3 style="margin:0">Créneaux</h3>
+      <button id="btnAddSlot" class="ibtn plus">+</button>
+    </div>
+    <div id="schedDays" class="seg"></div>
+    <div id="schedList" style="margin-top:12px"></div>
+  </div>
+</div>
       <button class="btn sec" id="btnAddSlot">+ Ajouter un créneau</button></div>
   </section>
 </main>
