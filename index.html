@@ -23,6 +23,27 @@ header .sub{font-size:12px;color:var(--mut)}
 main{padding:14px 16px;max-width:640px;margin:0 auto}
 .view{display:none}.view.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+
+/* Mouvement léger : cartes vivantes, lisibles et économes sur mobile */
+.card{position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.12);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(120deg,transparent 15%,rgba(255,255,255,.22),transparent 55%);background-size:220% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:borderSweep 7s linear infinite}
+.card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.22)}
+.view.on .card{animation:cardIn .42s both}
+.view.on .card:nth-child(2){animation-delay:.06s}.view.on .card:nth-child(3){animation-delay:.12s}
+.stat{--interest:#7c5cff;padding:9px 10px;border-radius:12px;transition:background .25s ease,box-shadow .25s ease}
+.stat:hover{background:color-mix(in srgb,var(--interest) 8%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--interest) 35%,transparent)}
+.stat .bar{box-shadow:0 0 0 1px color-mix(in srgb,var(--interest) 20%,transparent)}
+.stat .bar>i{box-shadow:0 0 12px color-mix(in srgb,var(--interest) 60%,transparent);position:relative;overflow:hidden}
+.stat .bar>i::after,.bar>i::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.7) 50%,transparent 80%);background-size:180% 100%;animation:shine 2.8s ease-in-out infinite}
+.big .lv,.big .ti{animation:shimmer 4s ease-in-out infinite;background:linear-gradient(105deg,var(--txt) 35%,#fff 50%,var(--txt) 65%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+.big .lv{filter:drop-shadow(0 0 14px rgba(124,92,255,.35))}
+.big.high .lv{animation:rankPulse 2.8s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(255,210,63,.6))}
+@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes borderSweep{to{background-position:-220% 0}}
+@keyframes shine{0%,35%{background-position:180% 0}70%,100%{background-position:-80% 0}}
+@keyframes shimmer{0%,100%{background-position:180% 0}50%{background-position:-80% 0}}
+@keyframes rankPulse{0%,100%{transform:scale(1);text-shadow:0 0 0 transparent}50%{transform:scale(1.04);text-shadow:0 0 24px rgba(255,210,63,.55)}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.card:hover{transform:none}}
 .card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 .bar{height:8px;background:var(--card2);border-radius:99px;overflow:hidden}
 .bar>i{display:block;height:100%;border-radius:99px;transition:width .3s}
@@ -85,9 +106,6 @@ nav button.on{color:var(--txt)}
 .slot .t{font-size:13px;color:var(--mut);min-width:96px}
 .slot .n{flex:1}
 .slot .x{color:var(--bad);font-size:18px;padding:0 6px}
-.sleeprow{display:flex;align-items:center;gap:10px}
-.sleeprow input{width:90px}
-.sleeprow .res{flex:1;font-size:13px;color:var(--mut);text-align:right}
 </style>
 </head>
 <body>
@@ -126,11 +144,6 @@ nav button.on{color:var(--txt)}
   </section>
   <section class="view" id="v-plan">
   <div class="card">
-    <h3 style="margin:0 0 4px">Sommeil</h3>
-    <div style="font-size:12px;color:var(--mut);margin-bottom:10px">Heures de sommeil par nuit</div>
-    <div id="sleepBox"></div>
-  </div>
-  <div class="card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <h3 style="margin:0">Créneaux</h3>
       <button id="btnAddSlot" class="ibtn plus">+</button>
@@ -160,7 +173,8 @@ var STATS={
 var KEYS=['sport','meditation','philosophie','electronique'];
 var TYPES={journaliere:'Journalière',commune:'Commune',epique:'Épique',legendaire:'Légendaire'};
 var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
-var JC=['D','L','M','M','J','V','S'];
+/* Les jours internes (planning et quêtes) sont indexés du lundi (0) au dimanche (6). */
+var JC=['L','M','M','J','V','S','D'];
 var KEY='jdlv2';
 var state,viewDay,currentView='today',questFilter='commune',statRange=7,schedDay=(new Date().getDay()+6)%7,tmp={};
 
@@ -169,6 +183,7 @@ function pad(n){return n<10?'0'+n:''+n}
 function dateKey(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
 function parseKey(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
 function addDays(k,n){var d=parseKey(k);d.setDate(d.getDate()+n);return dateKey(d)}
+function localDayIndex(d){return (d.getDay()+6)%7}
 function uid(){return 'q'+Date.now().toString(36)+Math.floor(Math.random()*1e5).toString(36)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&','<':'<','>':'>','"':'"'}[c]})}
 function toast(m){var t=el('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},1800)}
@@ -182,19 +197,23 @@ function overallTitle(lv){var t=['Initié','Aventurier','Vétéran','Héros','L�
 function defaultState(){
   return{player:'Joueur',quests:[],xp:{sport:0,meditation:0,philosophie:0,electronique:0},
     log:[],checks:{},penalties:{},lastPenaltyCheck:dateKey(),
-    schedule:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},sleep:{bed:'23:00',wake:'07:00'}}
+    schedule:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]}}
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function normalize(){
   var d=defaultState();
   for(var k in d){if(state[k]===undefined)state[k]=d[k]}
+  /* Migration unique : les anciennes quêtes stockaient getDay() (0=dimanche).
+     Le format courant utilise partout 0=lundi, comme le planning. */
+  if(state._weekdayIndexVersion!==1){
+    state.quests=(state.quests||[]).map(function(q){
+      if(q.days&&q.days.length)q.days=q.days.map(function(day){return (day+6)%7});
+      return q;
+    });
+    state._weekdayIndexVersion=1;
+  }
   for(var i=0;i<KEYS.length;i++){if(typeof state.xp[KEYS[i]]!=='number')state.xp[KEYS[i]]=0}
   for(var s=0;s<7;s++){if(!state.schedule[s])state.schedule[s]=[]}
-  if(!state.sleep||typeof state.sleep!=='object')state.sleep={};
-  if(typeof state.sleep.bed!=='string')state.sleep.bed='23:00';
-  if(typeof state.sleep.wake!=='string')state.sleep.wake='07:00';
-  if(typeof state.sleep.goal!=='number')state.sleep.goal=8;
-  if(!state.sleep.log||typeof state.sleep.log!=='object')state.sleep.log={};
   state.quests.forEach(function(q){
     if(!q.id)q.id=uid();
     if(!TYPES[q.type])q.type='commune';
@@ -236,7 +255,6 @@ function importData(o,silent){
   if(o.checks)base.checks=o.checks;
   if(o.penalties)base.penalties=o.penalties;
   if(o.schedule)base.schedule=o.schedule;
-  if(o.sleep)base.sleep=o.sleep;
   var map={daily:'journaliere',journaliere:'journaliere',easy:'journaliere',facile:'journaliere',
     commune:'commune',common:'commune',normal:'commune',moyenne:'commune',
     epique:'epique','épique':'epique',epic:'epique',dure:'epique',hard:'epique',
@@ -256,7 +274,7 @@ function importData(o,silent){
 function activeOn(q,key){
   if(q.type!=='journaliere')return false;
   if(key<q.created)return false;
-  return q.days.indexOf(parseKey(key).getDay())>=0;
+  return q.days.indexOf(localDayIndex(parseKey(key)))>=0;
 }
 function isChecked(id,key){return !!(state.checks[key]&&state.checks[key][id])}
 function applyPenalties(){
@@ -403,18 +421,6 @@ function slotForm(){
     save();closeSheet();renderPlan();renderToday();
   };
 }
-function sleepForm(){
-  var h='<h2>Sommeil</h2><label>Coucher</label><input id="zBed" type="time" value="'+state.sleep.bed+'">';
-  h+='<label>Réveil</label><input id="zWake" type="time" value="'+state.sleep.wake+'">';
-  h+='<button class="btn" id="zSave">Enregistrer</button><button class="btn sec" id="zCancel">Annuler</button>';
-  openSheet(h);
-  el('zCancel').onclick=closeSheet;
-  el('zSave').onclick=function(){
-    if(!el('zBed').value||!el('zWake').value){toast('Heures invalides');return}
-    state.sleep.bed=el('zBed').value;state.sleep.wake=el('zWake').value;
-    save();closeSheet();renderPlan();
-  };
-}
 function openSettings(){
   var h='<h2>Réglages</h2><label>Nom du joueur</label><input id="rName" value="'+esc(state.player)+'">';
   h+='<button class="btn" id="rSave">Enregistrer le nom</button>';
@@ -470,8 +476,8 @@ function renderToday(){
       '<div class="xp">+'+q.xp+'</div><button class="mini" data-edit="'+q.id+'">✎</button></div>';
   });
   el('dailyList').innerHTML=h||'<div class="empty">Aucune journalière ce jour.<br>Appuie sur + pour en créer.</div>';
-  var sl=state.schedule[d.getDay()]||[],sh='';
-  sl.forEach(function(s){sh+='<div class="slot"><div class="h">'+s.start+' – '+s.end+'</div><div class="l">'+esc(s.label)+'</div></div>'});
+  var sl=state.schedule[localDayIndex(d)]||[],sh='';
+  sl.forEach(function(s){sh+='<div class="slot"><div class="h">'+s.start+' – '+s.end+'</div><div class="l">'+esc(s.name||s.label||'Créneau')+'</div></div>'});
   el('daySched').innerHTML=sh||'<div class="empty">Rien de prévu.</div>';
 }
 function renderQuests(){
@@ -493,13 +499,13 @@ function renderQuests(){
 function renderProfile(){
   var tot=0;KEYS.forEach(function(k){tot+=state.xp[k]});
   var o=levelOf(tot);
-  el('ovLv').textContent='Niv. '+o.lv;el('ovTi').textContent=overallTitle(o.lv)+' · '+state.player;
+  el('ovLv').textContent='Niv. '+o.lv;el('ovTi').textContent=overallTitle(o.lv)+' · '+state.player;el('ovLv').parentNode.className='big'+(o.lv>=30?' high':'');
   el('ovBar').style.width=(o.cur/o.need*100)+'%';
   el('ovXp').textContent=o.cur+' / '+o.need+' XP · total '+tot;
   var h='';
   KEYS.forEach(function(k){
     var l=levelOf(state.xp[k]);
-    h+='<div class="stat"><div class="top"><span>'+dot(k)+'<b>'+STATS[k].label+'</b> · '+titleOf(k,l.lv)+'</span><span>Niv. '+l.lv+'</span></div>'+
+    h+='<div class="stat" style="--interest:'+STATS[k].hex+'"><div class="top"><span>'+dot(k)+'<b>'+STATS[k].label+'</b> · '+titleOf(k,l.lv)+'</span><span>Niv. '+l.lv+'</span></div>'+
       '<div class="bar"><i style="width:'+(l.cur/l.need*100)+'%;background:'+STATS[k].hex+'"></i></div>'+
       '<div class="mut" style="margin-top:3px">'+l.cur+' / '+l.need+' XP</div></div>';
   });
@@ -566,32 +572,6 @@ var DAYF=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
 function renderPlan(){
   if(!state.schedule)state.schedule={};
   for(var i=0;i<7;i++)if(!state.schedule[i])state.schedule[i]=[];
-  if(!state.sleep||typeof state.sleep!=='object')state.sleep={};
-  if(typeof state.sleep.bed!=='string')state.sleep.bed='23:00';
-  if(typeof state.sleep.wake!=='string')state.sleep.wake='07:00';
-  if(typeof state.sleep.goal!=='number')state.sleep.goal=8;
-  if(!state.sleep.log||typeof state.sleep.log!=='object')state.sleep.log={};
-
-  /* Sommeil */
-  var k=dateKey();
-  var last=state.sleep.log[k];
-  el('sleepBox').innerHTML=
-    '<div class="sleeprow"><label style="margin:0;flex:1">Coucher<input id="sleepBed" type="time" value="'+state.sleep.bed+'"></label><label style="margin:0;flex:1">Réveil<input id="sleepWake" type="time" value="'+state.sleep.wake+'"></label></div>'+
-    '<div class="sleeprow" style="margin-top:8px"><label style="margin:0;flex:1">Sommeil réalisé (h)<input id="sleepInput" type="number" step="0.5" min="0" max="24" placeholder="h" value="'+(last!=null?last:'')+'"></label>'+
-    '<button id="sleepSave" class="ibtn plus" style="width:auto;padding:0 14px;margin-top:18px">OK</button>'+
-    '<div class="res">Objectif : '+state.sleep.goal+' h</div></div>'+
-    '<label>Objectif (heures)</label>'+
-    '<input id="sleepGoal" type="number" step="0.5" min="1" max="24" value="'+state.sleep.goal+'">';
-  el('sleepSave').onclick=function(){
-    var v=parseFloat(el('sleepInput').value);
-    if(isNaN(v)||v<0||v>24){alert('Entre un nombre entre 0 et 24');return}
-    state.sleep.bed=el('sleepBed').value;state.sleep.wake=el('sleepWake').value;
-    state.sleep.log[dateKey()]=v;save();renderPlan();renderStats&&renderStats();
-  };
-  el('sleepGoal').onchange=function(){
-    var g=parseFloat(el('sleepGoal').value);
-    if(!isNaN(g)&&g>0&&g<=24){state.sleep.goal=g;save();renderPlan()}
-  };
 
   /* Sélecteur de jours */
   var h='';
@@ -603,7 +583,7 @@ function renderPlan(){
   var out='<div style="font-size:12px;color:var(--mut);margin-bottom:8px">'+DAYF[schedDay]+'</div>';
   if(!list.length)out+='<div style="color:var(--mut);font-size:13px;text-align:center;padding:14px">Aucun créneau</div>';
   list.forEach(function(s){
-    out+='<div class="slot"><div class="t">'+s.start+' – '+s.end+'</div><div class="n">'+esc(s.name)+'</div><button class="x" data-slotdel="'+s.id+'">✕</button></div>';
+    out+='<div class="slot"><div class="t">'+s.start+' – '+s.end+'</div><div class="n">'+esc(s.name||s.label||'Créneau')+'</div><button class="x" data-slotdel="'+s.id+'">✕</button></div>';
   });
   el('schedList').innerHTML=out;
 }
