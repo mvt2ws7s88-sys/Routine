@@ -2,911 +2,598 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#0f1220">
 <title>Jeu de la vie</title>
 <style>
-:root{
-  --bg:#0f1220; --card:#181c30; --card2:#20253d; --line:#2c3252;
-  --txt:#e8eaf6; --mut:#8a90b4; --acc:#7c5cff; --ok:#3ecf8e; --bad:#ff5c6c;
-  --c-sport:#ff7a45; --c-meditation:#4cc9f0; --c-philosophie:#b388ff; --c-electronique:#ffd23f;
-}
+:root{--bg:#0f1220;--card:#181c30;--card2:#20253d;--line:#2c3252;--txt:#e8eaf6;--mut:#8a90b4;--acc:#7c5cff;--ok:#3ecf8e;--bad:#ff5c6c}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px}
 body{padding-bottom:84px;min-height:100vh}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
-input,select,textarea{font:inherit;color:var(--txt);background:var(--card2);
-  border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;outline:none}
+input,select{font:inherit;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;outline:none}
 input:focus,select:focus{border-color:var(--acc)}
 label{display:block;font-size:12px;color:var(--mut);margin:12px 0 4px}
-
-header{position:sticky;top:0;z-index:20;background:var(--bg);
-  padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--line)}
+header{position:sticky;top:0;z-index:20;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
 header h1{margin:0;font-size:18px}
-header .date{font-size:12px;color:var(--mut);margin-top:2px}
+header .sub{font-size:12px;color:var(--mut)}
 .hbtns{display:flex;gap:8px}
-.ibtn{width:40px;height:40px;border-radius:12px;background:var(--card);
-  display:flex;align-items:center;justify-content:center;font-size:18px}
-.ibtn.acc{background:var(--acc)}
-
+.ibtn{width:38px;height:38px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:18px}
+.ibtn.plus{background:var(--acc);border-color:var(--acc)}
 main{padding:14px 16px;max-width:640px;margin:0 auto}
-.view{display:none}
-.view.on{display:block}
-
-.card{background:var(--card);border-radius:16px;padding:14px;margin-bottom:12px}
-.card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600;
-  text-transform:uppercase;letter-spacing:.5px}
-.empty{color:var(--mut);text-align:center;padding:18px 8px;font-size:14px}
-
-.bar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden}
-.bar>div{height:100%;border-radius:99px;transition:width .35s;background:var(--acc)}
-
+.view{display:none}.view.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.bar{height:8px;background:var(--card2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;border-radius:99px;transition:width .3s}
+.row{display:flex;align-items:center;gap:10px}
+.sp{flex:1;min-width:0}
+.mut{color:var(--mut);font-size:12px}
+.empty{color:var(--mut);text-align:center;padding:18px;font-size:13px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+.item{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);border-radius:12px;margin-bottom:8px}
+.item.done{opacity:.55}.item.done .t{text-decoration:line-through}
+.chk{width:26px;height:26px;border-radius:50%;border:2px solid var(--mut);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.item.done .chk{background:var(--ok);border-color:var(--ok);color:#06220f}
+.item.fail .chk{background:var(--bad);border-color:var(--bad)}
+.t{font-weight:600}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--card);border:1px solid var(--line);color:var(--mut);margin-right:4px}
+.xp{font-size:12px;color:var(--ok);font-weight:700;white-space:nowrap}
+.mini{padding:6px 10px;border-radius:9px;background:var(--card);border:1px solid var(--line);font-size:12px}
+.btn{width:100%;padding:12px;border-radius:12px;background:var(--acc);font-weight:700;margin-top:14px}
+.btn.sec{background:var(--card2);border:1px solid var(--line)}
+.btn.danger{background:var(--bad)}
+.seg{display:flex;gap:6px;overflow-x:auto;margin-bottom:12px;padding-bottom:2px}
+.seg button{padding:8px 14px;border-radius:99px;background:var(--card);border:1px solid var(--line);font-size:13px;white-space:nowrap}
+.seg button.on{background:var(--acc);border-color:var(--acc);font-weight:700}
 .daynav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.daynav h2{margin:0;font-size:18px}
-.daynav button{width:38px;height:38px;border-radius:10px;background:var(--card);font-size:16px}
-
-.q{display:flex;align-items:center;gap:12px;padding:12px;background:var(--card2);
-  border-radius:12px;margin-bottom:8px}
-.chk{width:28px;height:28px;border-radius:9px;border:2px solid var(--line);flex:none;
-  display:flex;align-items:center;justify-content:center;font-size:16px;color:transparent}
-.q.done .chk{background:var(--ok);border-color:var(--ok);color:#fff}
-.q.done .qt{text-decoration:line-through;color:var(--mut)}
-.qb{flex:1;min-width:0}
-.qt{font-weight:600;word-break:break-word}
-.qm{font-size:12px;color:var(--mut);margin-top:3px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.xp{font-weight:700;color:var(--ok);font-size:13px;flex:none}
-.q .more{width:32px;height:32px;border-radius:8px;color:var(--mut);font-size:18px;flex:none}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%}
-.tag{font-size:10px;padding:2px 7px;border-radius:99px;font-weight:700;text-transform:uppercase}
-.t-journaliere{background:#2a3f66;color:#8ec5ff}
-.t-commune{background:#2e3b2e;color:#9be39b}
-.t-epique{background:#3d2a5c;color:#c9a0ff}
-.t-legendaire{background:#5c4410;color:#ffd166}
-
-.seg{display:flex;gap:6px;background:var(--card);padding:4px;border-radius:12px;
-  margin-bottom:12px;overflow-x:auto}
-.seg button{flex:1;padding:9px 10px;border-radius:9px;font-size:13px;
-  color:var(--mut);white-space:nowrap}
-.seg button.on{background:var(--acc);color:#fff;font-weight:600}
-
-.pname{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.pname h2{margin:0;font-size:22px}
-.lvbig{text-align:center;padding:6px 0 4px}
-.lvbig .n{font-size:46px;font-weight:800;line-height:1}
-.lvbig .t{color:var(--mut);margin-top:4px}
+.daynav button{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:18px}
+.daynav .d{font-weight:700;text-align:center}
 .stat{margin-bottom:14px}
-.stat .row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.stat .nm{font-weight:700;display:flex;align-items:center;gap:8px}
-.stat .lv{font-size:12px;color:var(--mut)}
-.small{font-size:11px;color:var(--mut);margin-top:4px}
-
-.slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);
-  border-radius:12px;margin-bottom:8px}
-.slot .h{font-weight:700;min-width:96px;font-size:13px}
-.slot .l{flex:1}
-.slot .x{color:var(--bad);width:30px;height:30px}
-.days{display:flex;gap:4px;margin-bottom:12px}
-.days button{flex:1;padding:9px 0;border-radius:9px;background:var(--card);
-  font-size:12px;color:var(--mut)}
-.days button.on{background:var(--acc);color:#fff;font-weight:700}
-
-canvas{width:100%;height:220px;display:block}
-.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;font-size:12px;color:var(--mut)}
-.legend span{display:flex;align-items:center;gap:6px}
-
-.btn{padding:12px 16px;border-radius:12px;background:var(--acc);color:#fff;font-weight:600;width:100%}
-.btn.sec{background:var(--card2);color:var(--txt)}
-.btn.bad{background:var(--bad)}
-.row2{display:flex;gap:8px;margin-top:14px}
-.row2>*{flex:1}
-
-nav{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);
-  border-top:1px solid var(--line);display:flex;
-  padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;padding:10px 0 9px;font-size:11px;color:var(--mut);
-  display:flex;flex-direction:column;align-items:center;gap:3px}
-nav button .i{font-size:20px}
-nav button.on{color:var(--acc);font-weight:700}
-
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;
-  display:none;align-items:flex-end;justify-content:center}
-.ov.on{display:flex}
-.modal{background:var(--card);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
-  border-radius:20px 20px 0 0;padding:18px 16px 24px}
-.modal h2{margin:0 0 4px;font-size:18px}
-
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);
-  background:var(--card2);padding:10px 16px;border-radius:12px;font-size:14px;
-  opacity:0;pointer-events:none;transition:.25s;z-index:60;border:1px solid var(--line)}
-.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.stat .top{display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px}
+.big{text-align:center;padding:6px 0 4px}
+.big .lv{font-size:44px;font-weight:800;line-height:1}
+.big .ti{color:var(--mut);margin-top:4px}
+canvas{width:100%;height:210px;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:12px;color:var(--mut)}
+.slot{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--card2);border-radius:10px;margin-bottom:6px}
+.slot .h{color:var(--mut);font-size:12px;min-width:92px}
+.slot .l{flex:1;font-weight:600}
+.slot .x{color:var(--bad)}
+.row2{display:flex;gap:8px;margin-top:8px}
+.days{display:flex;gap:6px;margin-top:4px}
+.days button{flex:1;padding:9px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13px}
+.days button.on{background:var(--acc);border-color:var(--acc);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{padding:8px 12px;border-radius:99px;background:var(--card2);border:1px solid var(--line);font-size:13px}
+.chips button.on{border-width:2px}
+nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(15,18,32,.96);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+nav button{flex:1;padding:6px 0;font-size:11px;color:var(--mut);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button b{font-size:19px;font-weight:400}
+nav button.on{color:var(--txt)}
+#overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.6);display:none;align-items:flex-end;justify-content:center}
+#overlay.on{display:flex}
+#sheet{background:var(--card);width:100%;max-width:640px;max-height:90vh;overflow-y:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+#sheet h2{margin:0 0 4px;font-size:18px}
+#toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:99px;font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
+#toast.on{opacity:1}
 </style>
 </head>
 <body>
-
 <header>
-  <div>
-    <h1 id="hName">Jeu de la vie</h1>
-    <div class="date" id="headDate"></div>
-  </div>
-  <div class="hbtns">
-    <button class="ibtn acc" id="btnAdd" title="Nouvelle quête">＋</button>
-    <button class="ibtn" id="btnSettings" title="Réglages">⚙</button>
-  </div>
+  <div><h1 id="hName">Joueur</h1><div class="sub" id="hSub"></div></div>
+  <div class="hbtns"><button class="ibtn plus" id="btnAdd">+</button><button class="ibtn" id="btnSettings">⚙</button></div>
 </header>
-
 <main>
-  <!-- AUJOURD'HUI -->
   <section class="view on" id="v-today">
-    <div class="daynav">
-      <button id="dayPrev">◀</button>
-      <h2 id="todayTitle">Aujourd'hui</h2>
-      <button id="dayNext">▶</button>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-        <span id="dayProgress" style="font-size:13px;color:var(--mut)">0 / 0</span>
-      </div>
-      <div class="bar"><div id="dayBar" style="width:0%"></div></div>
-    </div>
+    <div class="daynav"><button id="dayPrev">‹</button><div class="d" id="dayLabel"></div><button id="dayNext">›</button></div>
+    <div class="card"><div class="row"><div class="sp"><div id="dayProg" class="t">0/0</div><div class="mut" id="dayXp"></div></div></div>
+      <div class="bar" style="margin-top:10px"><i id="dayBar" style="width:0;background:var(--acc)"></i></div></div>
+    <div class="card"><h3>Planning du jour</h3><div id="daySched"></div></div>
     <div class="card"><h3>Quêtes journalières</h3><div id="dailyList"></div></div>
-    <div class="card"><h3>Planning du jour</h3><div id="todaySchedule"></div></div>
   </section>
-
-  <!-- QUÊTES -->
   <section class="view" id="v-quests">
     <div class="seg" id="questSeg">
-      <button data-f="commune" class="on">Communes</button>
-      <button data-f="epique">Épiques</button>
-      <button data-f="legendaire">Légendaires</button>
-      <button data-f="archives">Archives</button>
+      <button data-f="commune" class="on">Communes</button><button data-f="epique">Épiques</button>
+      <button data-f="legendaire">Légendaires</button><button data-f="archives">Archives</button>
     </div>
     <div id="questList"></div>
   </section>
-
-  <!-- PROFIL -->
   <section class="view" id="v-profile">
-    <div id="profileBox"></div>
+    <div class="card"><div class="big"><div class="lv" id="ovLv">1</div><div class="ti" id="ovTi"></div></div>
+      <div class="bar" style="margin-top:12px"><i id="ovBar" style="width:0;background:var(--acc)"></i></div>
+      <div class="mut" id="ovXp" style="text-align:center;margin-top:6px"></div></div>
+    <div class="card"><h3>Centres d'intérêt</h3><div id="statList"></div></div>
   </section>
-
-  <!-- STATS -->
   <section class="view" id="v-stats">
     <div class="seg" id="rangeSeg">
-      <button data-r="7" class="on">Semaine</button>
-      <button data-r="30">Mois</button>
-      <button data-r="90">3 mois</button>
-      <button data-r="365">Année</button>
+      <button data-r="7" class="on">Semaine</button><button data-r="30">Mois</button>
+      <button data-r="90">3 mois</button><button data-r="365">Année</button>
     </div>
-    <div class="card">
-      <h3>XP gagné</h3>
-      <canvas id="chart"></canvas>
-      <div class="legend" id="chartLegend"></div>
-    </div>
-    <div class="card"><h3>Résumé</h3><div id="statsSummary"></div></div>
+    <div class="card"><h3>XP gagnée</h3><canvas id="chart"></canvas><div class="legend" id="chartLegend"></div></div>
+    <div class="card"><h3>Résumé</h3><div id="sumBox"></div></div>
   </section>
-
-  <!-- PLANNING -->
   <section class="view" id="v-plan">
-    <div class="days" id="schedDays"></div>
-    <div class="card">
-      <h3>Créneaux</h3>
-      <div id="schedList"></div>
-      <div class="row2"><button class="btn sec" id="btnAddSlot">＋ Ajouter un créneau</button></div>
-    </div>
-    <div class="card">
-      <h3>Sommeil</h3>
-      <div id="sleepBox"></div>
-    </div>
+    <div class="card"><h3>Sommeil</h3><div id="sleepBox"></div></div>
+    <div class="card"><h3>Créneaux</h3><div class="seg" id="schedDays"></div><div id="schedList"></div>
+      <button class="btn sec" id="btnAddSlot">+ Ajouter un créneau</button></div>
   </section>
 </main>
-
 <nav id="nav">
-  <button data-v="today" class="on"><span class="i">☀</span>Aujourd'hui</button>
-  <button data-v="quests"><span class="i">⚔</span>Quêtes</button>
-  <button data-v="profile"><span class="i">👤</span>Profil</button>
-  <button data-v="stats"><span class="i">📊</span>Stats</button>
-  <button data-v="plan"><span class="i">🗓</span>Planning</button>
+  <button data-v="today" class="on"><b>☀</b>Aujourd'hui</button>
+  <button data-v="quests"><b>⚔</b>Quêtes</button>
+  <button data-v="profile"><b>★</b>Profil</button>
+  <button data-v="stats"><b>▥</b>Stats</button>
+  <button data-v="plan"><b>◷</b>Planning</button>
 </nav>
-
-<div class="ov" id="ov"><div class="modal" id="modal"></div></div>
-<div class="toast" id="toast"></div>
-<input type="file" id="fileIn" accept=".json,application/json" style="display:none">
+<div id="overlay"><div id="sheet"></div></div>
+<div id="toast"></div>
 
 <script>
-/* ================================================================
-   CONSTANTES
-   ================================================================ */
-var STORE_KEY = 'jdv_data_v2';
-var OLD_KEYS = ['jdv_data','jeudelavie','jdv','gameOfLife','lifeGame','jdv_data_v1'];
-var PENALTY = 5;
-
-var TYPES = {
-  journaliere:{label:'Journalière',css:'t-journaliere'},
-  commune:{label:'Commune',css:'t-commune'},
-  epique:{label:'Épique',css:'t-epique'},
-  legendaire:{label:'Légendaire',css:'t-legendaire'}
+var STATS={
+  sport:{label:'Sport',hex:'#ff7a45',titles:['Novice','Sportif','AthlÚte','Champion','Colosse','Titan']},
+  meditation:{label:'Méditation',hex:'#4cc9f0',titles:['Éveillé','Apaisé','Serein','Sage','Moine','Bouddha']},
+  philosophie:{label:'Philosophie',hex:'#b388ff',titles:['Curieux','Penseur','Raisonneur','Stoïcien','Philosophe','Socrate']},
+  electronique:{label:'Électronique',hex:'#ffd23f',titles:['Bidouilleur','Technicien','Ingénieur','Concepteur','Maßtre','Tesla']}
 };
-var STATS = {
-  sport:{label:'Sport',color:'var(--c-sport)',hex:'#ff7a45'},
-  meditation:{label:'Méditation',color:'var(--c-meditation)',hex:'#4cc9f0'},
-  philosophie:{label:'Philosophie',color:'var(--c-philosophie)',hex:'#b388ff'},
-  electronique:{label:'Électronique',color:'var(--c-electronique)',hex:'#ffd23f'}
-};
-var STAT_KEYS = ['sport','meditation','philosophie','electronique'];
-var MOIS = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
-var JOURS = ['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
-var JOURS_C = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+var KEYS=['sport','meditation','philosophie','electronique'];
+var TYPES={journaliere:'Journalière',commune:'Commune',epique:'Épique',legendaire:'Légendaire'};
+var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+var JC=['D','L','M','M','J','V','S'];
+var KEY='jdlv2';
+var state,viewDay,currentView='today',questFilter='commune',statRange=7,schedDay=1,tmp={};
 
-/* ================================================================
-   OUTILS
-   ================================================================ */
-function el(id){ return document.getElementById(id); }
-function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
-function pad2(n){ return n<10 ? '0'+n : ''+n; }
-function dateKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
-function parseKey(k){ var p=k.split('-'); return new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10)); }
-function addDays(k,n){ var d=parseKey(k); d.setDate(d.getDate()+n); return dateKey(d); }
-function esc(s){ return String(s==null?'':s).replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>').replace(/"/g,'"'); }
-function toast(msg){
-  var t=el('toast'); t.textContent=msg; t.classList.add('on');
-  clearTimeout(toast._t); toast._t=setTimeout(function(){ t.classList.remove('on'); },2200);
-}
-function dateFr(d){ return JOURS[d.getDay()]+' '+d.getDate()+' '+MOIS[d.getMonth()]; }
-function tag(q){ return '<span class="tag '+TYPES[q.type].css+'">'+TYPES[q.type].label+'</span>'; }
-function dot(stat){ return '<span class="dot" style="background:'+STATS[stat].color+'"></span>'; }
+function el(i){return document.getElementById(i)}
+function pad(n){return n<10?'0'+n:''+n}
+function dateKey(d){d=d||new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function parseKey(k){var p=k.split('-');return new Date(+p[0],+p[1]-1,+p[2])}
+function addDays(k,n){var d=parseKey(k);d.setDate(d.getDate()+n);return dateKey(d)}
+function uid(){return 'q'+Date.now().toString(36)+Math.floor(Math.random()*1e5).toString(36)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&','<':'<','>':'>','"':'"'}[c]})}
+function toast(m){var t=el('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},1800)}
+function dot(k){return '<span class="dot" style="background:'+STATS[k].hex+'"></span>'}
 
-/* ================================================================
-   DONNÉES
-   ================================================================ */
-var state = null;
+/* Niveaux : niveau n demande 100*n XP pour passer au suivant */
+function levelOf(xp){var l=1,need=100;xp=Math.max(0,xp);while(xp>=need){xp-=need;l++;need=100*l}return{lv:l,cur:xp,need:need}}
+function titleOf(k,lv){var t=STATS[k].titles;return t[Math.min(t.length-1,Math.floor((lv-1)/10))]}
+function overallTitle(lv){var t=['Initié','Aventurier','Vétéran','Héros','Légende','Mythe'];return t[Math.min(t.length-1,Math.floor((lv-1)/10))]}
 
 function defaultState(){
-  var sched = {};
-  for(var i=0;i<7;i++) sched[i]=[];
-  return {
-    version:2,
-    player:'Joueur',
-    quests:[],
-    log:[],
-    schedule:sched,
-    sleep:{bed:'23:00',wake:'07:00'},
-    lastPenaltyCheck:dateKey()
-  };
+  return{player:'Joueur',quests:[],xp:{sport:0,meditation:0,philosophie:0,electronique:0},
+    log:[],checks:{},penalties:{},lastPenaltyCheck:dateKey(),
+    schedule:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]},sleep:{bed:'23:00',wake:'07:00'}}
 }
-
-function save(){
-  try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){ toast('Sauvegarde impossible'); }
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+function normalize(){
+  var d=defaultState();
+  for(var k in d){if(state[k]===undefined)state[k]=d[k]}
+  for(var i=0;i<KEYS.length;i++){if(typeof state.xp[KEYS[i]]!=='number')state.xp[KEYS[i]]=0}
+  for(var s=0;s<7;s++){if(!state.schedule[s])state.schedule[s]=[]}
+  state.quests.forEach(function(q){
+    if(!q.id)q.id=uid();
+    if(!TYPES[q.type])q.type='commune';
+    if(typeof q.xp!=='number'||isNaN(q.xp))q.xp=10;
+    if(!q.stats||!q.stats.length)q.stats=['sport'];
+    q.stats=q.stats.filter(function(s){return STATS[s]});
+    if(!q.stats.length)q.stats=['sport'];
+    if(!q.days||!q.days.length)q.days=[0,1,2,3,4,5,6];
+    if(!q.created)q.created=dateKey();
+  });
 }
-
-function mapOldType(t){
-  t=String(t||'').toLowerCase();
-  if(t==='journaliere'||t==='journalière'||t==='daily') return 'journaliere';
-  if(t==='epique'||t==='épique'||t==='dure'||t==='hard') return 'epique';
-  if(t==='legendaire'||t==='légendaire'||t==='difficile') return 'legendaire';
-  return 'commune';
-}
-function mapStat(s){
-  s=String(s||'').toLowerCase().replace(/é/g,'e').replace(/è/g,'e');
-  for(var i=0;i<STAT_KEYS.length;i++){ if(s.indexOf(STAT_KEYS[i])===0) return STAT_KEYS[i]; }
-  return 'sport';
-}
-
-function normalize(raw){
-  var s=defaultState();
-  if(!raw||typeof raw!=='object') return s;
-  s.player = raw.player || raw.name || raw.playerName || raw.nom || 'Joueur';
-  var qs = raw.quests || raw.quetes || raw.tasks || [];
-  if(!Array.isArray(qs)) qs=[];
-  for(var i=0;i<qs.length;i++){
-    var q=qs[i]; if(!q) continue;
-    var type = mapOldType(q.type || q.difficulty || q.difficulte);
-    s.quests.push({
-      id:q.id||uid(),
-      title:String(q.title||q.nom||q.name||'Quête'),
-      type:type,
-      stat:mapStat(q.stat||q.category||q.categorie||q.theme),
-      xp:Math.max(0,parseInt(q.xp||q.points||10,10)||10),
-      done:!!q.done,
-      archived:!!q.archived,
-      created:q.created||dateKey(),
-      doneDates:Array.isArray(q.doneDates)?q.doneDates:[],
-      ar:Array.isArray(q.ar)?q.ar:[]
-    });
-  }
-  if(Array.isArray(raw.log)){
-    for(var j=0;j<raw.log.length;j++){
-      var l=raw.log[j];
-      if(l&&l.date) s.log.push({date:l.date,stat:mapStat(l.stat),xp:parseInt(l.xp,10)||0,title:l.title||''});
-    }
-  }
-  if(raw.schedule&&typeof raw.schedule==='object'){
-    for(var d=0;d<7;d++){
-      if(Array.isArray(raw.schedule[d])) s.schedule[d]=raw.schedule[d];
-    }
-  }
-  if(raw.sleep&&raw.sleep.bed) s.sleep={bed:raw.sleep.bed,wake:raw.sleep.wake||'07:00'};
-  s.lastPenaltyCheck = raw.lastPenaltyCheck || dateKey();
-  return s;
-}
-
 function load(){
   var raw=null;
-  try{ raw=localStorage.getItem(STORE_KEY); }catch(e){}
-  if(raw){
-    try{ state=normalize(JSON.parse(raw)); return; }catch(e){}
-  }
-  for(var i=0;i<OLD_KEYS.length;i++){
+  try{raw=localStorage.getItem(KEY)}catch(e){}
+  if(raw){try{state=JSON.parse(raw)}catch(e){state=null}}
+  if(!state){
+    state=defaultState();
+    /* tentative de récupération d'anciennes données */
     try{
-      var o=localStorage.getItem(OLD_KEYS[i]);
-      if(o){
-        state=normalize(JSON.parse(o));
-        save();
-        setTimeout(function(){ toast('Anciennes données converties ✓'); },600);
-        return;
+      for(var i=0;i<localStorage.length;i++){
+        var kk=localStorage.key(i);
+        if(kk===KEY)continue;
+        var v=JSON.parse(localStorage.getItem(kk));
+        if(v&&typeof v==='object'&&(v.quests||v.tasks||v.missions)){importData(v,true);break}
       }
     }catch(e){}
   }
-  state=defaultState();
-  save();
+  normalize();
 }
 
-/* ================================================================
-   XP / NIVEAUX
-   ================================================================ */
-function totalXP(stat){
-  var t=0;
-  for(var i=0;i<state.log.length;i++){ if(state.log[i].stat===stat) t+=state.log[i].xp; }
-  return Math.max(0,t);
-}
-function levelFromXP(xp){
-  var lvl=1,need=100,left=xp;
-  while(left>=need){ left-=need; lvl++; need=100+50*(lvl-1); }
-  return {level:lvl,into:left,need:need};
-}
-function titleForLevel(l){
-  if(l>=50) return 'Légende vivante';
-  if(l>=40) return 'Grand maître';
-  if(l>=30) return 'Maître';
-  if(l>=25) return 'Expert';
-  if(l>=20) return 'Vétéran';
-  if(l>=15) return 'Confirmé';
-  if(l>=10) return 'Adepte';
-  if(l>=6)  return 'Initié';
-  if(l>=3)  return 'Apprenti';
-  return 'Novice';
-}
-function addLog(stat,xp,title,date){
-  state.log.push({date:date||dateKey(),stat:stat,xp:xp,title:title||''});
+/* Ancien format → nouveau */
+function importData(o,silent){
+  var base=defaultState();
+  var old=o.quests||o.tasks||o.missions||[];
+  if(o.player&&typeof o.player==='string')base.player=o.player;
+  else if(o.name)base.player=o.name;
+  if(o.xp&&typeof o.xp==='object'){for(var i=0;i<KEYS.length;i++){if(typeof o.xp[KEYS[i]]==='number')base.xp[KEYS[i]]=o.xp[KEYS[i]]}}
+  if(o.log)base.log=o.log;
+  if(o.checks)base.checks=o.checks;
+  if(o.penalties)base.penalties=o.penalties;
+  if(o.schedule)base.schedule=o.schedule;
+  if(o.sleep)base.sleep=o.sleep;
+  var map={daily:'journaliere',journaliere:'journaliere',easy:'journaliere',facile:'journaliere',
+    commune:'commune',common:'commune',normal:'commune',moyenne:'commune',
+    epique:'epique','épique':'epique',epic:'epique',dure:'epique',hard:'epique',
+    legendaire:'legendaire','légendaire':'legendaire',legendary:'legendaire',difficile:'legendaire'};
+  base.quests=old.map(function(q){
+    var t=String(q.type||q.difficulty||q.diff||'').toLowerCase();
+    var cats=q.stats||q.cats||(q.stat?[q.stat]:(q.cat?[q.cat]:[]));
+    return{id:q.id||uid(),title:q.title||q.name||q.text||'Quête',
+      type:map[t]||'commune',xp:+q.xp||+q.points||10,stats:cats,
+      days:q.days,done:!!q.done,doneAt:q.doneAt,created:q.created}
+  });
+  state=base;normalize();save();
+  if(!silent)renderAll();
 }
 
-/* ================================================================
-   QUÊTES
-   ================================================================ */
-function findQuest(id){
-  for(var i=0;i<state.quests.length;i++){ if(state.quests[i].id===id) return state.quests[i]; }
-  return null;
+/* Appliquer les pénalités des jours passés (-5 XP par journalière active non cochée) */
+function activeOn(q,key){
+  if(q.type!=='journaliere')return false;
+  if(key<q.created)return false;
+  return q.days.indexOf(parseKey(key).getDay())>=0;
 }
-function dailyDoneOn(q,day){ return q.doneDates.indexOf(day)>=0; }
-
-function toggleDaily(id,day){
-  var q=findQuest(id); if(!q) return;
-  var i=q.doneDates.indexOf(day);
-  if(i>=0){
-    q.doneDates.splice(i,1);
-    addLog(q.stat,-q.xp,'Annulé : '+q.title,day);
-  }else{
-    q.doneDates.push(day);
-    var pi=q.ar.indexOf(day);
-    if(pi>=0){ q.ar.splice(pi,1); addLog(q.stat,PENALTY,'Pénalité annulée : '+q.title,day); }
-    addLog(q.stat,q.xp,q.title,day);
-    toast('+'+q.xp+' XP '+STATS[q.stat].label);
+function isChecked(id,key){return !!(state.checks[key]&&state.checks[key][id])}
+function applyPenalties(){
+  var today=dateKey(),from=state.lastPenaltyCheck||today,k=from,guard=0;
+  while(k<today&&guard<400){
+    state.quests.forEach(function(q){
+      if(activeOn(q,k)&&!isChecked(q.id,k)){
+        var pk=k+'|'+q.id;
+        if(!state.penalties[pk]){
+          state.penalties[pk]=1;
+          q.stats.forEach(function(s){state.xp[s]=Math.max(0,state.xp[s]-5)});
+          state.log.push({date:k,xp:-5,stats:q.stats.slice(),title:q.title,pen:1});
+        }
+      }
+    });
+    k=addDays(k,1);guard++;
   }
-  save(); renderAll();
+  state.lastPenaltyCheck=today;save();
 }
 
+/* Gain / perte d'XP */
+function gain(q,sign,key){
+  q.stats.forEach(function(s){
+    var before=levelOf(state.xp[s]).lv;
+    state.xp[s]=Math.max(0,state.xp[s]+sign*q.xp);
+    var after=levelOf(state.xp[s]).lv;
+    if(sign>0&&after>before)toast(STATS[s].label+' niveau '+after+' ★');
+  });
+  if(sign>0)state.log.push({date:key,xp:q.xp,stats:q.stats.slice(),title:q.title,qid:q.id});
+  else{
+    for(var i=state.log.length-1;i>=0;i--){
+      if(state.log[i].qid===q.id&&state.log[i].date===key&&!state.log[i].pen){state.log.splice(i,1);break}
+    }
+  }
+}
+function toggleDaily(id,key){
+  var q=state.quests.filter(function(x){return x.id===id})[0];
+  if(!q)return;
+  if(!state.checks[key])state.checks[key]={};
+  if(state.checks[key][id]){delete state.checks[key][id];gain(q,-1,key)}
+  else{state.checks[key][id]=1;gain(q,1,key)}
+  save();renderAll();
+}
 function completeQuest(id){
-  var q=findQuest(id); if(!q) return;
-  q.done=true; q.archived=true; q.finishedOn=dateKey();
-  addLog(q.stat,q.xp,q.title);
-  toast('Quête terminée ! +'+q.xp+' XP');
-  save(); renderAll();
+  var q=state.quests.filter(function(x){return x.id===id})[0];
+  if(!q||q.done)return;
+  q.done=true;q.doneAt=dateKey();gain(q,1,q.doneAt);save();renderAll();
 }
 function restoreQuest(id){
-  var q=findQuest(id); if(!q) return;
-  q.done=false; q.archived=false;
-  addLog(q.stat,-q.xp,'Restaurée : '+q.title);
-  save(); renderAll();
-}
-function deleteQuest(id){
-  state.quests=state.quests.filter(function(q){ return q.id!==id; });
-  save(); renderAll();
+  var q=state.quests.filter(function(x){return x.id===id})[0];
+  if(!q||!q.done)return;
+  gain(q,-1,q.doneAt||dateKey());q.done=false;q.doneAt=null;save();renderAll();
 }
 
-/* Pénalité : -5 XP par jour passé non coché, journalières seulement */
-function applyPenalties(){
-  var today=dateKey();
-  var last=state.lastPenaltyCheck||today;
-  if(last>=today){ state.lastPenaltyCheck=today; save(); return; }
-  var day=last;
-  var guard=0;
-  while(day<today && guard<400){
-    for(var i=0;i<state.quests.length;i++){
-      var q=state.quests[i];
-      if(q.type!=='journaliere') continue;
-      if(q.created>day) continue;
-      if(q.doneDates.indexOf(day)>=0) continue;
-      if(q.ar.indexOf(day)>=0) continue;
-      q.ar.push(day);
-      var cur=totalXP(q.stat);
-      var loss=Math.min(PENALTY,cur);
-      if(loss>0) addLog(q.stat,-loss,'Pénalité : '+q.title,day);
-    }
-    day=addDays(day,1); guard++;
-  }
-  state.lastPenaltyCheck=today;
-  save();
-}
+/* Fenêtres */
+function openSheet(html){el('sheet').innerHTML=html;el('overlay').classList.add('on')}
+function closeSheet(){el('overlay').classList.remove('on');el('sheet').innerHTML=''}
+el('overlay').addEventListener('click',function(e){if(e.target===el('overlay'))closeSheet()});
 
-/* ================================================================
-   MODALES
-   ================================================================ */
-function openModal(html){
-  el('modal').innerHTML=html;
-  el('ov').classList.add('on');
-}
-function closeModal(){
-  el('ov').classList.remove('on');
-  el('modal').innerHTML='';
-}
-el('ov').addEventListener('click',function(e){ if(e.target===el('ov')) closeModal(); });
-
-function questForm(id,defType){
-  var q=id?findQuest(id):null;
-  var type=q?q.type:(defType&&TYPES[defType]?defType:'journaliere');
-  var stat=q?q.stat:'sport';
-  var typeOpts='',statOpts='';
-  for(var t in TYPES){ typeOpts+='<option value="'+t+'"'+(t===type?' selected':'')+'>'+TYPES[t].label+'</option>'; }
-  for(var s in STATS){ statOpts+='<option value="'+s+'"'+(s===stat?' selected':'')+'>'+STATS[s].label+'</option>'; }
-  openModal(
-    '<h2>'+(q?'Modifier la quête':'Nouvelle quête')+'</h2>'+
-    '<label>Titre</label><input id="fTitle" value="'+esc(q?q.title:'')+'" placeholder="Ex : 30 pompes">'+
-    '<label>Type</label><select id="fType">'+typeOpts+'</select>'+
-    '<label>Centre d\'intérêt</label><select id="fStat">'+statOpts+'</select>'+
-    '<label>XP donnée (libre)</label><input id="fXp" type="number" min="0" inputmode="numeric" value="'+(q?q.xp:10)+'">'+
-    '<div class="small" id="fHint"></div>'+
-    '<div class="row2"><button class="btn sec" id="fCancel">Annuler</button><button class="btn" id="fSave">Enregistrer</button></div>'+
-    (q?'<div class="row2"><button class="btn bad" id="fDel">Supprimer</button></div>':'')
-  );
-  function hint(){
-    el('fHint').textContent = el('fType').value==='journaliere'
-      ? 'Journalière : −'+PENALTY+' XP si non cochée un jour passé.'
-      : 'Sans pénalité. Archivée une fois terminée.';
-  }
-  hint();
-  el('fType').onchange=hint;
-  el('fCancel').onclick=closeModal;
+function questForm(id,presetType){
+  var q=id?state.quests.filter(function(x){return x.id===id})[0]:null;
+  tmp={type:q?q.type:(presetType||'commune'),stats:q?q.stats.slice():['sport'],days:q?q.days.slice():[0,1,2,3,4,5,6]};
+  var h='<h2>'+(q?'Modifier la quête':'Nouvelle quête')+'</h2>';
+  h+='<label>Titre</label><input id="fTitle" value="'+(q?esc(q.title):'')+'" placeholder="Ex : 30 pompes">';
+  h+='<label>Type</label><div class="chips" id="fType">';
+  for(var t in TYPES)h+='<button data-t="'+t+'"'+(tmp.type===t?' class="on" style="border-color:var(--acc)"':'')+'>'+TYPES[t]+'</button>';
+  h+='</div>';
+  h+='<div id="fDaysBox"></div>';
+  h+='<label>XP gagnée (libre)</label><input id="fXp" type="number" min="1" value="'+(q?q.xp:10)+'">';
+  h+='<label>Centres d\'intérêt (1 ou plusieurs)</label><div class="chips" id="fStats">';
+  KEYS.forEach(function(k){h+='<button data-s="'+k+'">'+dot(k)+STATS[k].label+'</button>'});
+  h+='</div>';
+  h+='<button class="btn" id="fSave">Enregistrer</button>';
+  if(q)h+='<button class="btn danger" id="fDel">Supprimer</button>';
+  h+='<button class="btn sec" id="fCancel">Annuler</button>';
+  openSheet(h);
+  paintStats();paintDays();
+  el('fType').onclick=function(e){
+    var b=e.target.closest('button[data-t]');if(!b)return;
+    tmp.type=b.getAttribute('data-t');
+    var bs=el('fType').querySelectorAll('button');
+    for(var i=0;i<bs.length;i++){var on=bs[i].getAttribute('data-t')===tmp.type;bs[i].className=on?'on':'';bs[i].style.borderColor=on?'var(--acc)':''}
+    paintDays();
+  };
+  el('fStats').onclick=function(e){
+    var b=e.target.closest('button[data-s]');if(!b)return;
+    var s=b.getAttribute('data-s'),i=tmp.stats.indexOf(s);
+    if(i>=0){if(tmp.stats.length>1)tmp.stats.splice(i,1)}else tmp.stats.push(s);
+    paintStats();
+  };
+  el('fCancel').onclick=closeSheet;
+  if(q)el('fDel').onclick=function(){
+    if(confirm('Supprimer cette quête ?')){state.quests=state.quests.filter(function(x){return x.id!==q.id});save();closeSheet();renderAll()}
+  };
   el('fSave').onclick=function(){
     var title=el('fTitle').value.trim();
-    if(!title){ toast('Donne un titre'); return; }
-    var xp=Math.max(0,parseInt(el('fXp').value,10)||0);
-    if(q){
-      q.title=title; q.type=el('fType').value; q.stat=el('fStat').value; q.xp=xp;
-    }else{
-      state.quests.push({
-        id:uid(),title:title,type:el('fType').value,stat:el('fStat').value,xp:xp,
-        done:false,archived:false,created:dateKey(),doneDates:[],ar:[]
-      });
-    }
-    save(); closeModal(); renderAll(); toast('Enregistré ✓');
+    if(!title){toast('Donne un titre');return}
+    var xp=parseInt(el('fXp').value,10);
+    if(isNaN(xp)||xp<1){toast('XP invalide');return}
+    if(tmp.type==='journaliere'&&!tmp.days.length){toast('Choisis au moins un jour');return}
+    var days=tmp.type==='journaliere'?tmp.days.slice():[0,1,2,3,4,5,6];
+    if(q){q.title=title;q.type=tmp.type;q.xp=xp;q.stats=tmp.stats.slice();q.days=days}
+    else state.quests.push({id:uid(),title:title,type:tmp.type,xp:xp,stats:tmp.stats.slice(),days:days,done:false,created:dateKey()});
+    save();closeSheet();renderAll();
   };
-  if(q) el('fDel').onclick=function(){ if(confirm('Supprimer cette quête ?')){ deleteQuest(q.id); closeModal(); } };
+}
+function paintStats(){
+  var bs=el('fStats').querySelectorAll('button');
+  for(var i=0;i<bs.length;i++){
+    var k=bs[i].getAttribute('data-s'),on=tmp.stats.indexOf(k)>=0;
+    bs[i].className=on?'on':'';bs[i].style.borderColor=on?STATS[k].hex:'';
+  }
+}
+function paintDays(){
+  var box=el('fDaysBox');
+  if(tmp.type!=='journaliere'){box.innerHTML='';return}
+  var order=[1,2,3,4,5,6,0],h='<label>Jours actifs</label><div class="days" id="fDays">';
+  order.forEach(function(d){h+='<button data-d="'+d+'"'+(tmp.days.indexOf(d)>=0?' class="on"':'')+'>'+JC[d]+'</button>'});
+  h+='</div><div class="mut" style="margin-top:6px">La quête n\'apparaît (et ne pénalise) que ces jours-là.</div>';
+  box.innerHTML=h;
+  el('fDays').onclick=function(e){
+    var b=e.target.closest('button[data-d]');if(!b)return;
+    var d=parseInt(b.getAttribute('data-d'),10),i=tmp.days.indexOf(d);
+    if(i>=0)tmp.days.splice(i,1);else tmp.days.push(d);
+    b.className=i>=0?'':'on';
+  };
 }
 
 function slotForm(){
-  openModal(
-    '<h2>Nouveau créneau</h2>'+
-    '<label>Jour</label><select id="sDay">'+
-      [1,2,3,4,5,6,0].map(function(d){ return '<option value="'+d+'"'+(d===schedDay?' selected':'')+'>'+JOURS[d]+'</option>'; }).join('')+
-    '</select>'+
-    '<label>Début</label><input id="sStart" type="time" value="09:00">'+
-    '<label>Fin</label><input id="sEnd" type="time" value="10:00">'+
-    '<label>Activité</label><input id="sLabel" placeholder="Ex : Cours, Sport...">'+
-    '<div class="row2"><button class="btn sec" id="sCancel">Annuler</button><button class="btn" id="sSave">Ajouter</button></div>'
-  );
-  el('sCancel').onclick=closeModal;
+  var h='<h2>Nouveau créneau</h2><div class="mut">'+JOURS[schedDay]+'</div>';
+  h+='<label>Début</label><input id="sStart" type="time" value="09:00">';
+  h+='<label>Fin</label><input id="sEnd" type="time" value="10:00">';
+  h+='<label>Activité</label><input id="sLabel" placeholder="Ex : Salle de sport">';
+  h+='<button class="btn" id="sSave">Ajouter</button><button class="btn sec" id="sCancel">Annuler</button>';
+  openSheet(h);
+  el('sCancel').onclick=closeSheet;
   el('sSave').onclick=function(){
-    var label=el('sLabel').value.trim();
-    if(!label){ toast('Donne un nom'); return; }
-    var d=parseInt(el('sDay').value,10);
-    state.schedule[d].push({id:uid(),start:el('sStart').value,end:el('sEnd').value,label:label});
-    state.schedule[d].sort(function(a,b){ return a.start<b.start?-1:1; });
-    save(); closeModal(); schedDay=d; renderAll(); toast('Ajouté ✓');
+    var s=el('sStart').value,e=el('sEnd').value,l=el('sLabel').value.trim();
+    if(!s||!e||!l){toast('Remplis tout');return}
+    state.schedule[schedDay].push({id:uid(),start:s,end:e,label:l});
+    state.schedule[schedDay].sort(function(a,b){return a.start<b.start?-1:1});
+    save();closeSheet();renderPlan();renderToday();
   };
 }
-
 function sleepForm(){
-  openModal(
-    '<h2>Sommeil</h2>'+
-    '<label>Heure de coucher</label><input id="slBed" type="time" value="'+state.sleep.bed+'">'+
-    '<label>Heure de réveil</label><input id="slWake" type="time" value="'+state.sleep.wake+'">'+
-    '<div class="row2"><button class="btn sec" id="slCancel">Annuler</button><button class="btn" id="slSave">Enregistrer</button></div>'
-  );
-  el('slCancel').onclick=closeModal;
-  el('slSave').onclick=function(){
-    state.sleep={bed:el('slBed').value||'23:00',wake:el('slWake').value||'07:00'};
-    save(); closeModal(); renderAll(); toast('Enregistré ✓');
+  var h='<h2>Sommeil</h2><label>Coucher</label><input id="zBed" type="time" value="'+state.sleep.bed+'">';
+  h+='<label>Réveil</label><input id="zWake" type="time" value="'+state.sleep.wake+'">';
+  h+='<button class="btn" id="zSave">Enregistrer</button><button class="btn sec" id="zCancel">Annuler</button>';
+  openSheet(h);
+  el('zCancel').onclick=closeSheet;
+  el('zSave').onclick=function(){
+    if(!el('zBed').value||!el('zWake').value){toast('Heures invalides');return}
+    state.sleep.bed=el('zBed').value;state.sleep.wake=el('zWake').value;
+    save();closeSheet();renderPlan();
   };
 }
-
-function nameForm(){
-  openModal(
-    '<h2>Nom du joueur</h2>'+
-    '<label>Ton nom</label><input id="nName" value="'+esc(state.player)+'">'+
-    '<div class="row2"><button class="btn sec" id="nCancel">Annuler</button><button class="btn" id="nSave">Enregistrer</button></div>'
-  );
-  el('nCancel').onclick=closeModal;
-  el('nSave').onclick=function(){
-    var n=el('nName').value.trim();
-    if(!n){ toast('Nom vide'); return; }
-    state.player=n; save(); closeModal(); renderAll(); toast('Nom changé ✓');
-  };
-  setTimeout(function(){ if(el('nName')) el('nName').focus(); },100);
-}
-
-/* ---------- EXPORT / IMPORT ---------- */
-function exportData(){
-  var blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
-  var url=URL.createObjectURL(blob);
-  var a=document.createElement('a');
-  a.href=url; a.download='jeu-de-la-vie-'+dateKey()+'.json';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(url); },1000);
-  toast('Export lancé ✓');
-}
-function importData(file){
-  if(!file) return;
-  var r=new FileReader();
-  r.onload=function(){
-    try{
-      state=normalize(JSON.parse(r.result));
-      state.lastPenaltyCheck=dateKey();
-      save(); closeModal(); renderAll(); toast('Import réussi ✓');
-    }catch(e){ toast('Fichier invalide'); }
-  };
-  r.readAsText(file);
-  el('fileIn').value='';
-}
-
 function openSettings(){
-  openModal(
-    '<h2>Réglages</h2>'+
-    '<label>Nom du joueur</label>'+
-    '<div class="row2" style="margin-top:0"><input id="rName" value="'+esc(state.player)+'"><button class="btn" id="rNameSave" style="flex:none;width:auto">OK</button></div>'+
-    '<label style="margin-top:18px">Données</label>'+
-    '<div class="row2" style="margin-top:0"><button class="btn sec" id="rExport">Exporter</button><button class="btn sec" id="rImport">Importer</button></div>'+
-    '<div class="row2"><button class="btn bad" id="rReset">Tout réinitialiser</button></div>'+
-    '<div class="row2"><button class="btn sec" id="rClose">Fermer</button></div>'
-  );
-  el('rNameSave').onclick=function(){
-    var n=el('rName').value.trim();
-    if(!n){ toast('Nom vide'); return; }
-    state.player=n; save(); renderAll(); toast('Nom changé ✓');
+  var h='<h2>Réglages</h2><label>Nom du joueur</label><input id="rName" value="'+esc(state.player)+'">';
+  h+='<button class="btn" id="rSave">Enregistrer le nom</button>';
+  h+='<button class="btn sec" id="rExport">Exporter mes données</button>';
+  h+='<label>Importer un fichier</label><input id="rFile" type="file" accept=".json,application/json">';
+  h+='<button class="btn danger" id="rReset">Tout réinitialiser</button>';
+  h+='<button class="btn sec" id="rClose">Fermer</button>';
+  openSheet(h);
+  el('rClose').onclick=closeSheet;
+  el('rSave').onclick=function(){
+    var n=el('rName').value.trim();if(!n){toast('Nom vide');return}
+    state.player=n;save();closeSheet();renderAll();toast('Nom enregistré');
   };
-  el('rExport').onclick=exportData;
-  el('rImport').onclick=function(){ el('fileIn').click(); };
+  el('rExport').onclick=function(){
+    var blob=new Blob([JSON.stringify(state,null,1)],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='jeu-de-la-vie-'+dateKey()+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  };
+  el('rFile').onchange=function(e){
+    var f=e.target.files[0];if(!f)return;
+    var r=new FileReader();
+    r.onload=function(){try{importData(JSON.parse(r.result));closeSheet();toast('Import réussi')}catch(x){toast('Fichier invalide')}};
+    r.readAsText(f);
+  };
   el('rReset').onclick=function(){
-    if(confirm('Tout effacer ? Fais un export avant !')){
-      state=defaultState(); save(); closeModal(); renderAll(); toast('Réinitialisé');
-    }
+    if(confirm('Tout effacer définitivement ?')){state=defaultState();normalize();save();closeSheet();viewDay=dateKey();renderAll()}
   };
-  el('rClose').onclick=closeModal;
 }
-el('fileIn').addEventListener('change',function(){ if(this.files&&this.files[0]) importData(this.files[0]); });
 
-/* ================================================================
-   AFFICHAGE
-   ================================================================ */
-var currentView='today';
-var viewDay=dateKey();
-var questFilter='commune';
-var statRange=7;
-var schedDay=new Date().getDay();
-
+/* Affichage */
+function chipsFor(q){return q.stats.map(function(s){return '<span class="tag">'+dot(s)+STATS[s].label+'</span>'}).join('')}
 function renderHeader(){
   el('hName').textContent=state.player;
-  el('headDate').textContent=dateFr(new Date());
+  var tot=0;KEYS.forEach(function(k){tot+=state.xp[k]});
+  var o=levelOf(tot);
+  el('hSub').textContent='Niveau '+o.lv+' · '+overallTitle(o.lv);
 }
-
 function renderToday(){
-  var today=dateKey();
+  var today=dateKey(),isToday=viewDay===today;
   var d=parseKey(viewDay);
-  var isToday=(viewDay===today);
-  el('todayTitle').textContent=isToday?"Aujourd'hui":(JOURS[d.getDay()].charAt(0).toUpperCase()+JOURS[d.getDay()].slice(1)+' '+d.getDate()+' '+MOIS[d.getMonth()].slice(0,4)+'.');
-  el('dayNext').style.visibility=viewDay>=today?'hidden':'visible';
-
-  var quests=state.quests.filter(function(q){ return q.type==='journaliere' && q.created<=viewDay; });
-  var html='',done=0;
-  for(var i=0;i<quests.length;i++){
-    var q=quests[i];
-    var ok=dailyDoneOn(q,viewDay);
-    var missed=!ok && q.ar.indexOf(viewDay)>=0;
-    if(ok) done++;
-    html+='<div class="q'+(ok?' done':'')+'">'+
-      '<button class="chk" data-chk="'+q.id+'">✓</button>'+
-      '<div class="qb"><div class="qt">'+esc(q.title)+'</div>'+
-      '<div class="qm">'+dot(q.stat)+STATS[q.stat].label+(missed?' · <span style="color:var(--bad)">−'+PENALTY+' XP</span>':'')+'</div></div>'+
-      '<div class="xp">+'+q.xp+'</div>'+
-      '<button class="more" data-edit="'+q.id+'">⋯</button></div>';
-  }
-  el('dailyList').innerHTML=html||'<div class="empty">Aucune quête journalière.<br>Appuie sur ＋ pour en créer une.</div>';
-  el('dayProgress').textContent=done+' / '+quests.length+' accomplies';
-  el('dayBar').style.width=(quests.length?Math.round(done/quests.length*100):0)+'%';
-
-  var slots=state.schedule[d.getDay()]||[];
-  var sh='';
-  for(var j=0;j<slots.length;j++){
-    sh+='<div class="slot"><div class="h">'+slots[j].start+' – '+slots[j].end+'</div><div class="l">'+esc(slots[j].label)+'</div></div>';
-  }
-  el('todaySchedule').innerHTML=sh||'<div class="empty">Rien de prévu ce jour.</div>';
-}
-
-function renderQuests(){
-  var btns=el('questSeg').querySelectorAll('button');
-  for(var b=0;b<btns.length;b++){ btns[b].classList.toggle('on',btns[b].getAttribute('data-f')===questFilter); }
-  var list=state.quests.filter(function(q){
-    if(questFilter==='archives') return q.type!=='journaliere' && q.archived;
-    return q.type===questFilter && !q.archived;
+  el('dayLabel').innerHTML=(isToday?'Aujourd\'hui':JOURS[d.getDay()])+'<div class="mut">'+d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear()+'</div>';
+  var list=state.quests.filter(function(q){return activeOn(q,viewDay)});
+  var done=list.filter(function(q){return isChecked(q.id,viewDay)}).length;
+  el('dayProg').textContent=done+' / '+list.length+' quêtes';
+  var xpd=0;list.forEach(function(q){if(isChecked(q.id,viewDay))xpd+=q.xp});
+  el('dayXp').textContent='+'+xpd+' XP aujourd\'hui · -5 XP par quête manquée';
+  el('dayBar').style.width=(list.length?done/list.length*100:0)+'%';
+  var h='';
+  list.forEach(function(q){
+    var c=isChecked(q.id,viewDay),failed=!c&&viewDay<today;
+    h+='<div class="item'+(c?' done':'')+(failed?' fail':'')+'"><button class="chk" data-chk="'+q.id+'">'+(c?'✓':(failed?'✕':''))+'</button>'+
+      '<div class="sp"><div class="t">'+esc(q.title)+'</div><div>'+chipsFor(q)+'</div></div>'+
+      '<div class="xp">+'+q.xp+'</div><button class="mini" data-edit="'+q.id+'">✎</button></div>';
   });
-  var html='';
-  for(var i=0;i<list.length;i++){
-    var q=list[i];
-    var arch=questFilter==='archives';
-    html+='<div class="q'+(arch?' done':'')+'">'+
-      (arch?'<button class="chk" data-restore="'+q.id+'" title="Restaurer">↺</button>'
-           :'<button class="chk" data-complete="'+q.id+'">✓</button>')+
-      '<div class="qb"><div class="qt">'+esc(q.title)+'</div>'+
-      '<div class="qm">'+tag(q)+dot(q.stat)+STATS[q.stat].label+(arch&&q.finishedOn?' · '+q.finishedOn:'')+'</div></div>'+
+  el('dailyList').innerHTML=h||'<div class="empty">Aucune journalière ce jour.<br>Appuie sur + pour en créer.</div>';
+  var sl=state.schedule[d.getDay()]||[],sh='';
+  sl.forEach(function(s){sh+='<div class="slot"><div class="h">'+s.start+' – '+s.end+'</div><div class="l">'+esc(s.label)+'</div></div>'});
+  el('daySched').innerHTML=sh||'<div class="empty">Rien de prévu.</div>';
+}
+function renderQuests(){
+  var bs=el('questSeg').querySelectorAll('button');
+  for(var i=0;i<bs.length;i++)bs[i].className=bs[i].getAttribute('data-f')===questFilter?'on':'';
+  var list;
+  if(questFilter==='archives')list=state.quests.filter(function(q){return q.type!=='journaliere'&&q.done});
+  else list=state.quests.filter(function(q){return q.type===questFilter&&!q.done});
+  var h='';
+  list.forEach(function(q){
+    h+='<div class="item'+(q.done?' done':'')+'">'+
+      (q.done?'<div class="chk">✓</div>':'<button class="chk" data-complete="'+q.id+'"></button>')+
+      '<div class="sp"><div class="t">'+esc(q.title)+'</div><div><span class="tag">'+TYPES[q.type]+'</span>'+chipsFor(q)+'</div></div>'+
       '<div class="xp">+'+q.xp+'</div>'+
-      '<button class="more" data-edit="'+q.id+'">⋯</button></div>';
-  }
-  el('questList').innerHTML=html||'<div class="empty">'+(questFilter==='archives'?'Aucune quête archivée.':'Aucune quête ici.<br>Appuie sur ＋ pour en créer une.')+'</div>';
+      (q.done?'<button class="mini" data-restore="'+q.id+'">↺</button>':'<button class="mini" data-edit="'+q.id+'">✎</button>')+'</div>';
+  });
+  el('questList').innerHTML=h||'<div class="empty">'+(questFilter==='archives'?'Aucune quête archivée.':'Aucune quête ici.<br>Appuie sur + pour en créer.')+'</div>';
 }
-
 function renderProfile(){
-  var all=0;
-  for(var i=0;i<STAT_KEYS.length;i++) all+=totalXP(STAT_KEYS[i]);
-  var ov=levelFromXP(all);
-  var html='<div class="card"><div class="pname"><h2>'+esc(state.player)+'</h2>'+
-    '<button class="ibtn" id="btnRename" title="Changer le nom">✎</button></div>'+
-    '<div class="lvbig"><div class="n">'+ov.level+'</div><div class="t">Overall · '+titleForLevel(ov.level)+'</div></div>'+
-    '<div class="bar"><div style="width:'+Math.round(ov.into/ov.need*100)+'%"></div></div>'+
-    '<div class="small" style="text-align:center">'+ov.into+' / '+ov.need+' XP · total '+all+'</div></div>';
-  html+='<div class="card"><h3>Centres d\'intérêt</h3>';
-  for(var k=0;k<STAT_KEYS.length;k++){
-    var key=STAT_KEYS[k];
-    var xp=totalXP(key);
-    var lv=levelFromXP(xp);
-    html+='<div class="stat"><div class="row"><div class="nm">'+dot(key)+STATS[key].label+'</div>'+
-      '<div class="lv">Niv. '+lv.level+' · '+titleForLevel(lv.level)+'</div></div>'+
-      '<div class="bar"><div style="width:'+Math.round(lv.into/lv.need*100)+'%;background:'+STATS[key].color+'"></div></div>'+
-      '<div class="small">'+lv.into+' / '+lv.need+' XP</div></div>';
-  }
-  html+='</div>';
-  el('profileBox').innerHTML=html;
-  el('btnRename').onclick=nameForm;
+  var tot=0;KEYS.forEach(function(k){tot+=state.xp[k]});
+  var o=levelOf(tot);
+  el('ovLv').textContent='Niv. '+o.lv;el('ovTi').textContent=overallTitle(o.lv)+' · '+state.player;
+  el('ovBar').style.width=(o.cur/o.need*100)+'%';
+  el('ovXp').textContent=o.cur+' / '+o.need+' XP · total '+tot;
+  var h='';
+  KEYS.forEach(function(k){
+    var l=levelOf(state.xp[k]);
+    h+='<div class="stat"><div class="top"><span>'+dot(k)+'<b>'+STATS[k].label+'</b> · '+titleOf(k,l.lv)+'</span><span>Niv. '+l.lv+'</span></div>'+
+      '<div class="bar"><i style="width:'+(l.cur/l.need*100)+'%;background:'+STATS[k].hex+'"></i></div>'+
+      '<div class="mut" style="margin-top:3px">'+l.cur+' / '+l.need+' XP</div></div>';
+  });
+  el('statList').innerHTML=h;
 }
-
-function renderStats(){
-  var btns=el('rangeSeg').querySelectorAll('button');
-  for(var b=0;b<btns.length;b++){ btns[b].classList.toggle('on',parseInt(btns[b].getAttribute('data-r'),10)===statRange); }
-  drawChart();
-  var from=addDays(dateKey(),-(statRange-1));
-  var per={},total=0,i;
-  for(i=0;i<STAT_KEYS.length;i++) per[STAT_KEYS[i]]=0;
-  for(i=0;i<state.log.length;i++){
-    var l=state.log[i];
-    if(l.date>=from && l.xp>0){ per[l.stat]+=l.xp; total+=l.xp; }
+function buckets(){
+  var n=statRange,today=dateKey(),start=addDays(today,-(n-1)),step=n<=31?1:(n<=100?7:30),res=[];
+  for(var i=0;i<n;i+=step){
+    var b={from:addDays(start,i),to:addDays(start,Math.min(n-1,i+step-1)),v:{sport:0,meditation:0,philosophie:0,electronique:0}};
+    res.push(b);
   }
-  var html='<div style="font-size:26px;font-weight:800;margin-bottom:10px">'+total+' <span style="font-size:13px;color:var(--mut);font-weight:400">XP sur la période</span></div>';
-  for(i=0;i<STAT_KEYS.length;i++){
-    html+='<div class="slot"><div class="l">'+dot(STAT_KEYS[i])+' '+STATS[STAT_KEYS[i]].label+'</div><div class="xp">'+per[STAT_KEYS[i]]+' XP</div></div>';
-  }
-  el('statsSummary').innerHTML=html;
-}
-
-function drawChart(){
-  var cv=el('chart');
-  if(!cv||!cv.offsetWidth) return;
-  var dpr=window.devicePixelRatio||1;
-  var W=cv.offsetWidth,H=220;
-  cv.width=W*dpr; cv.height=H*dpr;
-  var c=cv.getContext('2d');
-  c.setTransform(dpr,0,0,dpr,0,0);
-  c.clearRect(0,0,W,H);
-
-  var n=statRange;
-  var step=n<=7?1:(n<=30?1:(n<=90?3:7));
-  var buckets=[];
-  var today=dateKey();
-  var start=addDays(today,-(n-1));
-  var cur=start;
-  while(cur<=today){
-    var end=addDays(cur,step-1); if(end>today) end=today;
-    var b={from:cur,to:end,v:{}};
-    for(var k=0;k<STAT_KEYS.length;k++) b.v[STAT_KEYS[k]]=0;
-    buckets.push(b);
-    cur=addDays(end,1);
-  }
-  for(var i=0;i<state.log.length;i++){
-    var l=state.log[i];
-    if(l.xp<=0) continue;
-    for(var j=0;j<buckets.length;j++){
-      if(l.date>=buckets[j].from && l.date<=buckets[j].to){ buckets[j].v[l.stat]+=l.xp; break; }
+  state.log.forEach(function(e){
+    if(e.date<start||e.date>today||e.xp<0)return;
+    for(var j=0;j<res.length;j++){
+      if(e.date>=res[j].from&&e.date<=res[j].to){
+        e.stats.forEach(function(s){if(res[j].v[s]!==undefined)res[j].v[s]+=e.xp});break;
+      }
     }
-  }
-  var max=10;
-  for(var m=0;m<buckets.length;m++){
-    var s=0; for(var q=0;q<STAT_KEYS.length;q++) s+=buckets[m].v[STAT_KEYS[q]];
-    if(s>max) max=s;
-  }
-  var padL=30,padB=22,padT=8,padR=6;
-  var cw=W-padL-padR,ch=H-padB-padT;
-  c.strokeStyle='#2c3252'; c.fillStyle='#8a90b4'; c.font='10px sans-serif'; c.lineWidth=1;
+  });
+  return res;
+}
+function renderStats(){
+  var bs=el('rangeSeg').querySelectorAll('button');
+  for(var i=0;i<bs.length;i++)bs[i].className=parseInt(bs[i].getAttribute('data-r'),10)===statRange?'on':'';
+  var b=buckets(),lg='',tot={sport:0,meditation:0,philosophie:0,electronique:0},all=0;
+  b.forEach(function(x){KEYS.forEach(function(k){tot[k]+=x.v[k];all+=x.v[k]})});
+  KEYS.forEach(function(k){lg+='<span>'+dot(k)+STATS[k].label+'</span>'});
+  el('chartLegend').innerHTML=lg;
+  var sh='<div class="stat"><div class="top"><span><b>Total période</b></span><span>'+all+' XP</span></div></div>';
+  KEYS.forEach(function(k){sh+='<div class="stat"><div class="top"><span>'+dot(k)+STATS[k].label+'</span><span>'+tot[k]+' XP</span></div></div>'});
+  el('sumBox').innerHTML=sh;
+  drawChart(b);
+}
+function drawChart(b){
+  b=b||buckets();
+  var cv=el('chart'),dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  if(!W)return;
+  cv.width=W*dpr;cv.height=H*dpr;
+  var c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  var padL=34,padR=6,padT=8,padB=22,cw=W-padL-padR,ch=H-padT-padB,max=10;
+  b.forEach(function(x){var s=0;KEYS.forEach(function(k){s+=x.v[k]});if(s>max)max=s});
+  c.font='10px sans-serif';c.fillStyle='#8a90b4';c.strokeStyle='#2c3252';c.lineWidth=1;
   for(var g=0;g<=4;g++){
     var gy=padT+ch-(g/4)*ch;
-    c.beginPath(); c.moveTo(padL,gy); c.lineTo(W-padR,gy); c.stroke();
+    c.beginPath();c.moveTo(padL,gy);c.lineTo(W-padR,gy);c.stroke();
     c.fillText(Math.round(max*g/4),2,gy+3);
   }
-  var bw=cw/buckets.length;
-  var barW=Math.max(2,bw*0.7);
-  for(var x=0;x<buckets.length;x++){
-    var bx=padL+x*bw+(bw-barW)/2;
-    var yy=padT+ch;
-    for(var t=0;t<STAT_KEYS.length;t++){
-      var val=buckets[x].v[STAT_KEYS[t]];
-      if(!val) continue;
-      var h=(val/max)*ch;
-      yy-=h;
-      c.fillStyle=STATS[STAT_KEYS[t]].hex;
-      c.fillRect(bx,yy,barW,h);
-    }
-    var showLabel = buckets.length<=10 || x%Math.ceil(buckets.length/6)===0;
-    if(showLabel){
-      var dd=parseKey(buckets[x].from);
-      c.fillStyle='#8a90b4'; c.textAlign='center';
-      c.fillText(dd.getDate()+'/'+(dd.getMonth()+1),bx+barW/2,H-6);
-      c.textAlign='left';
+  var bw=cw/b.length,barW=Math.max(2,bw*0.7);
+  for(var x=0;x<b.length;x++){
+    var bx=padL+x*bw+(bw-barW)/2,yy=padT+ch;
+    KEYS.forEach(function(k){
+      var v=b[x].v[k];if(!v)return;
+      var h=v/max*ch;yy-=h;c.fillStyle=STATS[k].hex;c.fillRect(bx,yy,barW,h);
+    });
+    if(b.length<=10||x%Math.ceil(b.length/6)===0){
+      var dd=parseKey(b[x].from);c.fillStyle='#8a90b4';c.textAlign='center';
+      c.fillText(dd.getDate()+'/'+(dd.getMonth()+1),bx+barW/2,H-6);c.textAlign='left';
     }
   }
-  var lg='';
-  for(var z=0;z<STAT_KEYS.length;z++) lg+='<span>'+dot(STAT_KEYS[z])+STATS[STAT_KEYS[z]].label+'</span>';
-  el('chartLegend').innerHTML=lg;
 }
-
 function renderPlan(){
-  var order=[1,2,3,4,5,6,0];
-  var dh='';
-  for(var i=0;i<order.length;i++){
-    dh+='<button data-d="'+order[i]+'"'+(order[i]===schedDay?' class="on"':'')+'>'+JOURS_C[order[i]]+'</button>';
-  }
+  var order=[1,2,3,4,5,6,0],dh='';
+  order.forEach(function(d){dh+='<button data-d="'+d+'"'+(d===schedDay?' class="on"':'')+'>'+JOURS[d].substr(0,3)+'</button>'});
   el('schedDays').innerHTML=dh;
-  var slots=state.schedule[schedDay]||[];
-  var html='';
-  for(var j=0;j<slots.length;j++){
-    html+='<div class="slot"><div class="h">'+slots[j].start+' – '+slots[j].end+'</div><div class="l">'+esc(slots[j].label)+'</div>'+
-      '<button class="x" data-slotdel="'+slots[j].id+'">✕</button></div>';
-  }
-  el('schedList').innerHTML=html||'<div class="empty">Aucun créneau ce jour.</div>';
-
+  var sl=state.schedule[schedDay]||[],h='';
+  sl.forEach(function(s){h+='<div class="slot"><div class="h">'+s.start+' – '+s.end+'</div><div class="l">'+esc(s.label)+'</div><button class="x" data-slotdel="'+s.id+'">✕</button></div>'});
+  el('schedList').innerHTML=h||'<div class="empty">Aucun créneau ce jour.</div>';
   var bed=state.sleep.bed,wake=state.sleep.wake;
-    var bm=parseInt(bed.split(':')[0],10)*60+parseInt(bed.split(':')[1],10);
+  var bm=parseInt(bed.split(':')[0],10)*60+parseInt(bed.split(':')[1],10);
   var wm=parseInt(wake.split(':')[0],10)*60+parseInt(wake.split(':')[1],10);
-  var dur=wm-bm; if(dur<=0) dur+=1440;
-  var hh=Math.floor(dur/60),mm=dur%60;
+  var dur=wm-bm;if(dur<=0)dur+=1440;
   el('sleepBox').innerHTML=
     '<div class="slot"><div class="h">Coucher</div><div class="l">'+bed+'</div></div>'+
     '<div class="slot"><div class="h">Réveil</div><div class="l">'+wake+'</div></div>'+
-    '<div class="slot"><div class="h">Durée</div><div class="l">'+hh+' h '+pad2(mm)+'</div></div>'+
-    '<div class="row2"><button class="btn sec" id="btnSleep">Modifier le sommeil</button></div>';
+    '<div class="slot"><div class="h">Durée</div><div class="l">'+Math.floor(dur/60)+' h '+pad(dur%60)+'</div></div>'+
+    '<button class="btn sec" id="btnSleep">Modifier le sommeil</button>';
   el('btnSleep').onclick=sleepForm;
 }
-
-function renderAll(){
-  renderHeader();
-  renderToday();
-  renderQuests();
-  renderProfile();
-  renderStats();
-  renderPlan();
-}
-
+function renderAll(){renderHeader();renderToday();renderQuests();renderProfile();renderStats();renderPlan()}
 function showView(v){
   currentView=v;
-  var views=document.querySelectorAll('.view');
-  for(var i=0;i<views.length;i++){ views[i].classList.toggle('on',views[i].id==='v-'+v); }
+  var vs=document.querySelectorAll('.view');
+  for(var i=0;i<vs.length;i++)vs[i].classList.toggle('on',vs[i].id==='v-'+v);
   var nb=el('nav').querySelectorAll('button');
-  for(var j=0;j<nb.length;j++){ nb[j].classList.toggle('on',nb[j].getAttribute('data-v')===v); }
+  for(var j=0;j<nb.length;j++)nb[j].classList.toggle('on',nb[j].getAttribute('data-v')===v);
   window.scrollTo(0,0);
-  if(v==='stats') setTimeout(drawChart,30);
+  if(v==='stats')setTimeout(function(){drawChart()},30);
 }
 
-/* ================================================================
-   ÉVÉNEMENTS
-   ================================================================ */
-el('nav').addEventListener('click',function(e){
-  var b=e.target.closest('button[data-v]');
-  if(b) showView(b.getAttribute('data-v'));
-});
-
-el('dayPrev').onclick=function(){ viewDay=addDays(viewDay,-1); renderToday(); };
-el('dayNext').onclick=function(){
-  if(viewDay<dateKey()){ viewDay=addDays(viewDay,1); renderToday(); }
-};
-
-/* Clics dans la liste du jour */
+/* Événements */
+el('nav').addEventListener('click',function(e){var b=e.target.closest('button[data-v]');if(b)showView(b.getAttribute('data-v'))});
+el('dayPrev').onclick=function(){viewDay=addDays(viewDay,-1);renderToday()};
+el('dayNext').onclick=function(){if(viewDay<dateKey()){viewDay=addDays(viewDay,1);renderToday()}};
 el('dailyList').addEventListener('click',function(e){
-  var c=e.target.closest('[data-chk]');
-  if(c){ toggleDaily(c.getAttribute('data-chk'),viewDay); return; }
-  var m=e.target.closest('[data-edit]');
-  if(m){ questForm(m.getAttribute('data-edit')); }
+  var c=e.target.closest('[data-chk]');if(c){toggleDaily(c.getAttribute('data-chk'),viewDay);return}
+  var m=e.target.closest('[data-edit]');if(m)questForm(m.getAttribute('data-edit'));
 });
-
-/* Clics dans la liste des quêtes */
 el('questList').addEventListener('click',function(e){
-  var c=e.target.closest('[data-complete]');
-  if(c){ completeQuest(c.getAttribute('data-complete')); return; }
-  var r=e.target.closest('[data-restore]');
-  if(r){ restoreQuest(r.getAttribute('data-restore')); return; }
-  var m=e.target.closest('[data-edit]');
-  if(m){ questForm(m.getAttribute('data-edit')); }
+  var c=e.target.closest('[data-complete]');if(c){completeQuest(c.getAttribute('data-complete'));return}
+  var r=e.target.closest('[data-restore]');if(r){restoreQuest(r.getAttribute('data-restore'));return}
+  var m=e.target.closest('[data-edit]');if(m)questForm(m.getAttribute('data-edit'));
 });
-
-/* Filtres des quêtes (4 onglets) */
-el('questSeg').addEventListener('click',function(e){
-  var b=e.target.closest('button[data-f]');
-  if(!b) return;
-  questFilter=b.getAttribute('data-f');
-  renderQuests();
-});
-
-/* Période des stats (semaine, mois...) */
-el('rangeSeg').addEventListener('click',function(e){
-  var b=e.target.closest('button[data-r]');
-  if(!b) return;
-  statRange=parseInt(b.getAttribute('data-r'),10);
-  renderStats();
-});
-
-/* Planning : jours + suppression de créneau */
-el('schedDays').addEventListener('click',function(e){
-  var b=e.target.closest('button[data-d]');
-  if(!b) return;
-  schedDay=parseInt(b.getAttribute('data-d'),10);
-  renderPlan();
-});
+el('questSeg').addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(!b)return;questFilter=b.getAttribute('data-f');renderQuests()});
+el('rangeSeg').addEventListener('click',function(e){var b=e.target.closest('button[data-r]');if(!b)return;statRange=parseInt(b.getAttribute('data-r'),10);renderStats()});
+el('schedDays').addEventListener('click',function(e){var b=e.target.closest('button[data-d]');if(!b)return;schedDay=parseInt(b.getAttribute('data-d'),10);renderPlan()});
 el('schedList').addEventListener('click',function(e){
-  var x=e.target.closest('[data-slotdel]');
-  if(!x) return;
+  var x=e.target.closest('[data-slotdel]');if(!x)return;
   var id=x.getAttribute('data-slotdel');
-  state.schedule[schedDay]=state.schedule[schedDay].filter(function(s){ return s.id!==id; });
-  save(); renderPlan(); renderToday();
+  state.schedule[schedDay]=state.schedule[schedDay].filter(function(s){return s.id!==id});
+  save();renderPlan();renderToday();
 });
 el('btnAddSlot').onclick=slotForm;
-
-/* Boutons du haut */
 el('btnAdd').onclick=function(){
-  var t=(currentView==='quests' && questFilter!=='archives')?questFilter:'journaliere';
+  var t=(currentView==='quests'&&questFilter!=='archives')?questFilter:'journaliere';
   questForm(null,t);
 };
 el('btnSettings').onclick=openSettings;
+window.addEventListener('resize',function(){if(currentView==='stats')drawChart()});
 
-window.addEventListener('resize',function(){ if(currentView==='stats') drawChart(); });
-
-/* ================================================================
-   DÉMARRAGE
-   ================================================================ */
+/* Démarrage */
 load();
+viewDay=dateKey();
 applyPenalties();
 renderAll();
 
@@ -914,9 +601,8 @@ renderAll();
 setInterval(function(){
   var today=dateKey();
   if(state.lastPenaltyCheck!==today){
-    if(viewDay===state.lastPenaltyCheck) viewDay=today;
-    applyPenalties();
-    renderAll();
+    if(viewDay===state.lastPenaltyCheck)viewDay=today;
+    applyPenalties();renderAll();
   }
 },60000);
 </script>
