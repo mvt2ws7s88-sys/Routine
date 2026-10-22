@@ -384,20 +384,22 @@ function paintDays(){
 }
 
 function slotForm(){
-  var h='<h2>Nouveau créneau</h2><div class="mut">'+JOURS[schedDay]+'</div>';
-  h+='<label>Début</label><input id="sStart" type="time" value="09:00">';
-  h+='<label>Fin</label><input id="sEnd" type="time" value="10:00">';
-  h+='<label>Activité</label><input id="sLabel" placeholder="Ex : Salle de sport">';
-  h+='<button class="btn" id="sSave">Ajouter</button><button class="btn sec" id="sCancel">Annuler</button>';
-  openSheet(h);
-  el('sCancel').onclick=closeSheet;
-  el('sSave').onclick=function(){
-    var s=el('sStart').value,e=el('sEnd').value,l=el('sLabel').value.trim();
-    if(!s||!e||!l){toast('Remplis tout');return}
-    state.schedule[schedDay].push({id:uid(),start:s,end:e,label:l});
-    state.schedule[schedDay].sort(function(a,b){return a.start<b.start?-1:1});
-    save();closeSheet();renderPlan();renderToday();
-  };
+  var name=prompt('Nom du créneau (ex : Lecture)');
+  if(!name)return;
+  var start=prompt('Début (HH:MM)','18:00');
+  if(!start||!/^\d{1,2}:\d{2}$/.test(start)){alert('Format HH:MM');return}
+  var end=prompt('Fin (HH:MM)','19:00');
+  if(!end||!/^\d{1,2}:\d{2}$/.test(end)){alert('Format HH:MM');return}
+  var all=prompt('Jours : tape les numéros (1=Lundi … 7=Dimanche), ex : 135 pour Lun/Mer/Ven.\nLaisse vide pour le jour affiché uniquement.','');
+  var days=[];
+  if(all&&all.trim()){
+    all.split('').forEach(function(c){var n=parseInt(c,10);if(n>=1&&n<=7&&days.indexOf(n-1)<0)days.push(n-1)});
+  }
+  if(!days.length)days=[schedDay];
+  days.forEach(function(d){
+    state.schedule[d].push({id:'s'+Date.now()+d,name:name.trim(),start:start,end:end});
+  });
+  save();renderPlan();
 }
 function sleepForm(){
   var h='<h2>Sommeil</h2><label>Coucher</label><input id="zBed" type="time" value="'+state.sleep.bed+'">';
@@ -556,23 +558,48 @@ function drawChart(b){
     }
   }
 }
+var schedDay=(new Date().getDay()+6)%7; /* 0=Lundi */
+var DAYN=['L','M','M','J','V','S','D'];
+var DAYF=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+
 function renderPlan(){
-  var order=[1,2,3,4,5,6,0],dh='';
-  order.forEach(function(d){dh+='<button data-d="'+d+'"'+(d===schedDay?' class="on"':'')+'>'+JOURS[d].substr(0,3)+'</button>'});
-  el('schedDays').innerHTML=dh;
-  var sl=state.schedule[schedDay]||[],h='';
-  sl.forEach(function(s){h+='<div class="slot"><div class="h">'+s.start+' – '+s.end+'</div><div class="l">'+esc(s.label)+'</div><button class="x" data-slotdel="'+s.id+'">✕</button></div>'});
-  el('schedList').innerHTML=h||'<div class="empty">Aucun créneau ce jour.</div>';
-  var bed=state.sleep.bed,wake=state.sleep.wake;
-  var bm=parseInt(bed.split(':')[0],10)*60+parseInt(bed.split(':')[1],10);
-  var wm=parseInt(wake.split(':')[0],10)*60+parseInt(wake.split(':')[1],10);
-  var dur=wm-bm;if(dur<=0)dur+=1440;
+  if(!state.schedule)state.schedule={};
+  for(var i=0;i<7;i++)if(!state.schedule[i])state.schedule[i]=[];
+  if(!state.sleep)state.sleep={goal:8,log:{}};
+
+  /* Sommeil */
+  var k=dateKey();
+  var last=state.sleep.log[k];
   el('sleepBox').innerHTML=
-    '<div class="slot"><div class="h">Coucher</div><div class="l">'+bed+'</div></div>'+
-    '<div class="slot"><div class="h">Réveil</div><div class="l">'+wake+'</div></div>'+
-    '<div class="slot"><div class="h">Durée</div><div class="l">'+Math.floor(dur/60)+' h '+pad(dur%60)+'</div></div>'+
-    '<button class="btn sec" id="btnSleep">Modifier le sommeil</button>';
-  el('btnSleep').onclick=sleepForm;
+    '<div class="sleeprow">'+
+    '<input id="sleepInput" type="number" step="0.5" min="0" max="24" placeholder="h" value="'+(last!=null?last:'')+'">'+
+    '<button id="sleepSave" class="ibtn plus" style="width:auto;padding:0 14px">OK</button>'+
+    '<div class="res">Objectif : '+state.sleep.goal+' h</div></div>'+
+    '<label>Objectif (heures)</label>'+
+    '<input id="sleepGoal" type="number" step="0.5" min="1" max="14" value="'+state.sleep.goal+'">';
+  el('sleepSave').onclick=function(){
+    var v=parseFloat(el('sleepInput').value);
+    if(isNaN(v)||v<0||v>24){alert('Entre un nombre entre 0 et 24');return}
+    state.sleep.log[dateKey()]=v;save();renderPlan();renderStats&&renderStats();
+  };
+  el('sleepGoal').onchange=function(){
+    var g=parseFloat(el('sleepGoal').value);
+    if(!isNaN(g)&&g>0&&g<=24){state.sleep.goal=g;save();renderPlan()}
+  };
+
+  /* Sélecteur de jours */
+  var h='';
+  for(var d=0;d<7;d++)h+='<button data-d="'+d+'" class="'+(d===schedDay?'on':'')+'">'+DAYN[d]+'</button>';
+  el('schedDays').innerHTML=h;
+
+  /* Créneaux du jour choisi */
+  var list=state.schedule[schedDay].slice().sort(function(a,b){return a.start<b.start?-1:1});
+  var out='<div style="font-size:12px;color:var(--mut);margin-bottom:8px">'+DAYF[schedDay]+'</div>';
+  if(!list.length)out+='<div style="color:var(--mut);font-size:13px;text-align:center;padding:14px">Aucun créneau</div>';
+  list.forEach(function(s){
+    out+='<div class="slot"><div class="t">'+s.start+' – '+s.end+'</div><div class="n">'+esc(s.name)+'</div><button class="x" data-slotdel="'+s.id+'">✕</button></div>';
+  });
+  el('schedList').innerHTML=out;
 }
 function renderAll(){renderHeader();renderToday();renderQuests();renderProfile();renderStats();renderPlan()}
 function showView(v){
