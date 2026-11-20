@@ -24,32 +24,21 @@ main{padding:14px 16px;max-width:640px;margin:0 auto}
 .view{display:none}.view.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
 
-/* Mouvement léger : cartes vivantes, lisibles et économes sur mobile */
-.card{position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.12);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
-.card::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(120deg,transparent 15%,rgba(255,255,255,.22),transparent 55%);background-size:220% 100%;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;animation:borderSweep 7s linear infinite}
-.card:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(0,0,0,.22)}
-.view.on .card{animation:cardIn .42s both}
-.view.on .card:nth-child(2){animation-delay:.06s}.view.on .card:nth-child(3){animation-delay:.12s}
+/* Cartes de contenu : relief statique, sans effets décoratifs animés. */
+.card{position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.12)}
 .stat{--interest:#7c5cff;padding:9px 10px;border-radius:12px;transition:background .25s ease,box-shadow .25s ease}
 .stat:hover{background:color-mix(in srgb,var(--interest) 8%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--interest) 35%,transparent)}
 .stat .bar{box-shadow:0 0 0 1px color-mix(in srgb,var(--interest) 20%,transparent)}
 .stat .bar>i{box-shadow:0 0 12px color-mix(in srgb,var(--interest) 60%,transparent);position:relative;overflow:hidden}
-.stat .bar>i::after,.bar>i::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.7) 50%,transparent 80%);background-size:180% 100%;animation:shine 2.8s ease-in-out infinite}
-.big .lv,.big .ti{animation:shimmer 4s ease-in-out infinite;background:linear-gradient(105deg,var(--txt) 35%,#fff 50%,var(--txt) 65%);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
-.big .lv{filter:drop-shadow(0 0 14px rgba(124,92,255,.35))}
-.big.high .lv{animation:rankPulse 2.8s ease-in-out infinite;filter:drop-shadow(0 0 18px rgba(255,210,63,.6))}
-@keyframes cardIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-@keyframes borderSweep{to{background-position:-220% 0}}
+.stat[data-theme] .bar>i::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 20%,rgba(255,255,255,.7) 50%,transparent 80%);background-size:180% 100%;animation:shine 2.8s ease-in-out infinite}
 @keyframes shine{0%,35%{background-position:180% 0}70%,100%{background-position:-80% 0}}
-@keyframes shimmer{0%,100%{background-position:180% 0}50%{background-position:-80% 0}}
-@keyframes rankPulse{0%,100%{transform:scale(1);text-shadow:0 0 0 transparent}50%{transform:scale(1.04);text-shadow:0 0 24px rgba(255,210,63,.55)}}
 
 /* Dix atmosphères de progression, CSS uniquement et limité à chaque carte. */
 .stat[data-theme]{position:relative;overflow:hidden;isolation:isolate;border:1px solid color-mix(in srgb,var(--interest) 26%,transparent)}
 .stat[data-theme]>*{position:relative;z-index:1}
 .stat[data-theme]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.48;background-size:180% 180%;animation:themeDrift 12s ease-in-out infinite}
 .stat[data-theme]::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.22}
-.stat[data-theme="vinland"]{border-image:linear-gradient(135deg,#9cecff,#536f8a,#d8e7df) 1;box-shadow:inset 0 0 24px #3e8cb022}
+.stat[data-theme="vinland"]{border:1px solid #83cde344;border-radius:12px;box-shadow:inset 0 0 24px #3e8cb022}
 .stat[data-theme="vinland"]::before{background:radial-gradient(ellipse at 14% 115%,#d8f7ff44,transparent 44%),radial-gradient(ellipse at 80% -30%,#a7c8d833,transparent 50%),linear-gradient(110deg,transparent,#e0f4ff0a,transparent)}
 .stat[data-theme="vinland"]::after{background:repeating-linear-gradient(135deg,transparent 0 18px,#d8e7df10 19px 20px)}
 .stat[data-theme="cyberpunk"]{box-shadow:inset 0 0 25px #ff1da522,0 0 12px #16edff12}
@@ -75,7 +64,7 @@ main{padding:14px 16px;max-width:640px;margin:0 auto}
 .stat[data-theme="aurora"]::after{inset:0 0 50%;background:linear-gradient(180deg,#b1ffe219,transparent)}
 .stat .interest-title{display:inline-block;transform-origin:left center}
 .stat[data-theme="cyberpunk"] .interest-title{text-shadow:1px 0 #ff38be,-1px 0 #27eaff;animation:glitch 5s steps(1) infinite}
-.stat[data-theme="vinland"] .interest-title{text-shadow:0 0 10px #8ad9eb99}
+.stat[data-theme="vinland"] .interest-title{text-shadow:0 0 10px #8ad9eb99;font-family:"Noto Sans Runic","Segoe UI Symbol",serif}
 .stat[data-theme="forge"] .interest-title,.stat[data-theme="aurora"] .interest-title{animation:rankGlow 3s ease-in-out infinite alternate}
 .stat[data-theme="antique"] .interest-title{font-variant:small-caps;letter-spacing:.04em}
 @keyframes themeDrift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
@@ -144,6 +133,13 @@ nav button.on{color:var(--txt)}
 #toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:99px;font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.on{opacity:1}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.feature-card{background:linear-gradient(145deg,#20243a 0%,#191e31 60%,#1d2437 100%);border-color:#6675a044;box-shadow:inset 3px 0 0 #7c8cff,0 10px 30px rgba(0,0,0,.12)}
+.overall-card{background:linear-gradient(145deg,#24263b 0%,#191e31 62%,#202638 100%);border-color:#9398dc44;box-shadow:inset 3px 0 0 #9a91ff,0 10px 30px rgba(0,0,0,.12)}
+.overall-card h3{color:#cbc5ff;letter-spacing:.11em}
+.feature-card h3{color:#b9c5ee;letter-spacing:.11em}
+.daily-progress-card{background:linear-gradient(145deg,#1c2932 0%,#1a2030 68%,#20233a 100%);border-color:#54cbb544;box-shadow:inset 3px 0 0 #54cbb5,0 10px 30px rgba(0,0,0,.12)}
+.daily-card{background:linear-gradient(145deg,#202b35 0%,#1a2030 62%,#22263a 100%);border-color:#79c5d044;box-shadow:inset 3px 0 0 #79c5d0,0 10px 30px rgba(0,0,0,.12)}
+.daily-card h3,.daily-progress-card h3{color:#a9d9dc;letter-spacing:.11em}
 .seg{display:flex;gap:6px}
 .seg button{flex:1;padding:9px 0;border-radius:10px;background:var(--card2);border:1px solid var(--line);font-size:13px;color:var(--mut)}
 .seg button.on{background:var(--acc);border-color:var(--acc);color:#fff}
@@ -161,10 +157,10 @@ nav button.on{color:var(--txt)}
 <main>
   <section class="view on" id="v-today">
     <div class="daynav"><button id="dayPrev">‹</button><div class="d" id="dayLabel"></div><button id="dayNext">›</button></div>
-    <div class="card"><div class="row"><div class="sp"><div id="dayProg" class="t">0/0</div><div class="mut" id="dayXp"></div></div></div>
+    <div class="card feature-card daily-progress-card"><h3>Progression du jour</h3><div class="row"><div class="sp"><div id="dayProg" class="t">0/0</div><div class="mut" id="dayXp"></div></div></div>
       <div class="bar" style="margin-top:10px"><i id="dayBar" style="width:0;background:var(--acc)"></i></div></div>
     <div class="card"><h3>Planning du jour</h3><div id="daySched"></div></div>
-    <div class="card"><h3>Quêtes journalières</h3><div id="dailyList"></div></div>
+    <div class="card feature-card daily-card"><h3>Quêtes journalières</h3><div id="dailyList"></div></div>
   </section>
   <section class="view" id="v-quests">
     <div class="seg" id="questSeg">
@@ -174,7 +170,7 @@ nav button.on{color:var(--txt)}
     <div id="questList"></div>
   </section>
   <section class="view" id="v-profile">
-    <div class="card"><div class="big"><div class="lv" id="ovLv">1</div><div class="ti" id="ovTi"></div></div>
+    <div class="card feature-card overall-card"><h3>Niveau global</h3><div class="big"><div class="lv" id="ovLv">1</div><div class="ti" id="ovTi"></div></div>
       <div class="bar" style="margin-top:12px"><i id="ovBar" style="width:0;background:var(--acc)"></i></div>
       <div class="mut" id="ovXp" style="text-align:center;margin-top:6px"></div></div>
     <div class="card"><div class="row" style="margin-bottom:10px"><h3 style="margin:0" class="sp">Centres d'intérêt</h3><button class="mini" id="btnInterests">Gérer</button></div><div id="statList"></div></div>
