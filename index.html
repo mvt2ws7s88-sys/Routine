@@ -43,6 +43,51 @@ main{padding:14px 16px;max-width:640px;margin:0 auto}
 @keyframes shine{0%,35%{background-position:180% 0}70%,100%{background-position:-80% 0}}
 @keyframes shimmer{0%,100%{background-position:180% 0}50%{background-position:-80% 0}}
 @keyframes rankPulse{0%,100%{transform:scale(1);text-shadow:0 0 0 transparent}50%{transform:scale(1.04);text-shadow:0 0 24px rgba(255,210,63,.55)}}
+
+/* Dix atmosphères de progression, CSS uniquement et limité à chaque carte. */
+.stat[data-theme]{position:relative;overflow:hidden;isolation:isolate;border:1px solid color-mix(in srgb,var(--interest) 26%,transparent)}
+.stat[data-theme]>*{position:relative;z-index:1}
+.stat[data-theme]::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.48;background-size:180% 180%;animation:themeDrift 12s ease-in-out infinite}
+.stat[data-theme]::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.22}
+.stat[data-theme="vinland"]{border-image:linear-gradient(135deg,#9cecff,#536f8a,#d8e7df) 1;box-shadow:inset 0 0 24px #3e8cb022}
+.stat[data-theme="vinland"]::before{background:radial-gradient(ellipse at 14% 115%,#d8f7ff44,transparent 44%),radial-gradient(ellipse at 80% -30%,#a7c8d833,transparent 50%),linear-gradient(110deg,transparent,#e0f4ff0a,transparent)}
+.stat[data-theme="vinland"]::after{background:repeating-linear-gradient(135deg,transparent 0 18px,#d8e7df10 19px 20px)}
+.stat[data-theme="cyberpunk"]{box-shadow:inset 0 0 25px #ff1da522,0 0 12px #16edff12}
+.stat[data-theme="cyberpunk"]::before{background:linear-gradient(115deg,#ff00a822,transparent 40%,#00f0ff1b),linear-gradient(0deg,transparent 75%,#00f0ff13 75% 76%,transparent 77%);background-size:180% 180%,100% 7px}
+.stat[data-theme="cyberpunk"]::after{background:linear-gradient(90deg,transparent 49.5%,#00f0ff12 50%,transparent 50.5%),linear-gradient(0deg,transparent 49.5%,#ff00a817 50%,transparent 50.5%);background-size:24px 24px;mask-image:linear-gradient(90deg,#000,transparent)}
+.stat[data-theme="forge"]{box-shadow:inset 0 -14px 24px #ff57221b}
+.stat[data-theme="forge"]::before{background:radial-gradient(ellipse at 35% 125%,#ff541c55,transparent 48%),radial-gradient(ellipse at 82% 110%,#ffc85738,transparent 35%)}
+.stat[data-theme="forge"]::after{background:radial-gradient(circle at 18% 80%,#ffd17855 0 1px,transparent 2px),radial-gradient(circle at 70% 66%,#ff7b3b55 0 1px,transparent 2px);background-size:54px 34px;animation:embers 7s linear infinite}
+.stat[data-theme="antique"]{background-image:linear-gradient(110deg,#3a2b241c,#b38c4920)!important}
+.stat[data-theme="antique"]::before{background:repeating-linear-gradient(0deg,transparent 0 5px,#e9d4a10b 6px,#e9d4a10b 7px),radial-gradient(ellipse at 90% 10%,#e5c67a20,transparent 48%)}
+.stat[data-theme="antique"]::after{inset:5px;border:1px solid #d9b86c55;border-radius:8px}
+.stat[data-theme="cosmos"]::before{background:radial-gradient(circle at 18% 20%,#fff 0 1px,transparent 2px),radial-gradient(circle at 72% 68%,#c3dbff 0 1px,transparent 2px),radial-gradient(ellipse at 60% 0%,#6861ff28,transparent 55%);background-size:71px 47px,93px 61px,100% 100%}
+.stat[data-theme="cosmos"]::after{background:radial-gradient(ellipse at 50% 130%,#5750b922,transparent 65%)}
+.stat[data-theme="ocean"]::before{background:repeating-radial-gradient(ellipse at 50% 115%,transparent 0 10px,#3bc9dc20 11px 12px,transparent 13px 23px),linear-gradient(125deg,#44d2ed12,transparent)}
+.stat[data-theme="ocean"]::after{background:linear-gradient(165deg,transparent 45%,#66e4ee14 46% 47%,transparent 48%)}
+.stat[data-theme="forest"]::before{background:radial-gradient(ellipse at 12% 110%,#53c98c30,transparent 42%),radial-gradient(ellipse at 88% -20%,#a1d66e20,transparent 45%)}
+.stat[data-theme="forest"]::after{background:radial-gradient(ellipse at 15% 10%,#b9df762b 0 3px,transparent 4px),radial-gradient(ellipse at 85% 70%,#57bd832b 0 4px,transparent 5px);background-size:47px 41px;animation:leafDrift 9s ease-in-out infinite}
+.stat[data-theme="samurai"]::before{background:radial-gradient(ellipse at 80% -15%,#fb9bbb2b,transparent 44%),linear-gradient(135deg,transparent 48%,#ffe5ed18 49%,transparent 50%)}
+.stat[data-theme="samurai"]::after{background:radial-gradient(ellipse at 21% 36%,#ffc0d444 0 2px,transparent 3px),radial-gradient(ellipse at 73% 76%,#ff9ebb40 0 2px,transparent 3px);background-size:53px 44px;animation:petalFall 12s linear infinite}
+.stat[data-theme="matrix"]::before{background:repeating-linear-gradient(90deg,transparent 0 16px,#62ff8120 17px 18px),linear-gradient(0deg,transparent,#42ff6b18);mask-image:linear-gradient(180deg,#000,transparent 85%)}
+.stat[data-theme="matrix"]::after{background:repeating-linear-gradient(0deg,transparent 0 3px,#63ff7811 4px 5px);background-size:100% 5px}
+.stat[data-theme="aurora"]::before{background:linear-gradient(115deg,#35e6c51c,#4b83ff22,#ed76ca1b,#c9f48720);background-size:240% 240%;filter:blur(2px)}
+.stat[data-theme="aurora"]::after{inset:0 0 50%;background:linear-gradient(180deg,#b1ffe219,transparent)}
+.stat .interest-title{display:inline-block;transform-origin:left center}
+.stat[data-theme="cyberpunk"] .interest-title{text-shadow:1px 0 #ff38be,-1px 0 #27eaff;animation:glitch 5s steps(1) infinite}
+.stat[data-theme="vinland"] .interest-title{text-shadow:0 0 10px #8ad9eb99}
+.stat[data-theme="forge"] .interest-title,.stat[data-theme="aurora"] .interest-title{animation:rankGlow 3s ease-in-out infinite alternate}
+.stat[data-theme="antique"] .interest-title{font-variant:small-caps;letter-spacing:.04em}
+@keyframes themeDrift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes embers{to{background-position:0 -90px,12px -60px}}
+@keyframes leafDrift{50%{transform:translateY(-3px) rotate(1deg)}}
+@keyframes petalFall{to{background-position:20px 95px,-20px 80px}}
+@keyframes glitch{0%,94%,100%{transform:none}95%{transform:translateX(1px)}96%{transform:translateX(-1px)}}
+@keyframes rankGlow{to{text-shadow:0 0 12px color-mix(in srgb,var(--interest) 70%,transparent)}}
+.theme-preview{padding:12px;border-radius:12px;margin-top:10px;background:var(--card2);color:var(--txt);border:1px solid var(--line);min-height:42px}
+.interest-row{padding:10px;background:var(--card2);border-radius:12px;margin:8px 0}
+@media (prefers-reduced-motion:reduce){.stat[data-theme]::before,.stat[data-theme]::after,.interest-title{animation:none!important}}
+
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}.card:hover{transform:none}}
 .card h3{margin:0 0 10px;font-size:14px;color:var(--mut);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
 .bar{height:8px;background:var(--card2);border-radius:99px;overflow:hidden}
@@ -132,7 +177,7 @@ nav button.on{color:var(--txt)}
     <div class="card"><div class="big"><div class="lv" id="ovLv">1</div><div class="ti" id="ovTi"></div></div>
       <div class="bar" style="margin-top:12px"><i id="ovBar" style="width:0;background:var(--acc)"></i></div>
       <div class="mut" id="ovXp" style="text-align:center;margin-top:6px"></div></div>
-    <div class="card"><h3>Centres d'intérêt</h3><div id="statList"></div></div>
+    <div class="card"><div class="row" style="margin-bottom:10px"><h3 style="margin:0" class="sp">Centres d'intérêt</h3><button class="mini" id="btnInterests">Gérer</button></div><div id="statList"></div></div>
   </section>
   <section class="view" id="v-stats">
     <div class="seg" id="rangeSeg">
@@ -164,13 +209,22 @@ nav button.on{color:var(--txt)}
 <div id="toast"></div>
 
 <script>
-var STATS={
-  sport:{label:'Sport',hex:'#ff7a45',titles:['Novice','Sportif','AthlÚte','Champion','Colosse','Titan']},
-  meditation:{label:'Méditation',hex:'#4cc9f0',titles:['Éveillé','Apaisé','Serein','Sage','Moine','Bouddha']},
-  philosophie:{label:'Philosophie',hex:'#b388ff',titles:['Curieux','Penseur','Raisonneur','Stoïcien','Philosophe','Socrate']},
-  electronique:{label:'Électronique',hex:'#ffd23f',titles:['Bidouilleur','Technicien','Ingénieur','Concepteur','Maßtre','Tesla']}
-};
-var KEYS=['sport','meditation','philosophie','electronique'];
+var DEFAULT_INTERESTS=[
+  {id:'sport',label:'Sport',hex:'#ff7a45',emoji:'🔥',theme:'forge',titles:['Novice','Sportif','Athlète','Champion','Colosse','Titan']},
+  {id:'meditation',label:'Méditation',hex:'#4cc9f0',emoji:'ᚱ',theme:'vinland',titles:['Éveillé','Apaisé','Serein','Sage','Moine','Bouddha']},
+  {id:'philosophie',label:'Philosophie',hex:'#b388ff',emoji:'🏛️',theme:'antique',titles:['Curieux','Penseur','Raisonneur','Stoïcien','Philosophe','Socrate']},
+  {id:'electronique',label:'Électronique',hex:'#ffd23f',emoji:'⌁',theme:'cyberpunk',titles:['Bidouilleur','Technicien','Ingénieur','Concepteur','Maître','Tesla']}
+];
+var THEMES=[['vinland','Vinland Saga · runes & brume'],['cyberpunk','Cyberpunk · néon & glitch'],['forge','Feu / Forge · braises'],['antique','Antique grec · parchemin'],['cosmos','Cosmos · étoiles'],['ocean','Océan · vagues'],['forest','Forêt · feuilles'],['samurai','Samouraï · sakura'],['matrix','Matrix · pluie de code'],['aurora','Aurore · iridescence']];
+var STATS={},KEYS=[];
+function syncInterests(){
+  if(!Array.isArray(state.interests)||!state.interests.length)state.interests=DEFAULT_INTERESTS.map(function(x){return JSON.parse(JSON.stringify(x))});
+  STATS=Object.create(null);KEYS=[];var seen={};
+  state.interests.forEach(function(x){if(!x)return;x.id=String(x.id||interestId()).toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,48);if(!x.id||seen[x.id])x.id=interestId();seen[x.id]=1;x.label=String(x.label||x.name||x.id).slice(0,32);x.hex=/^#[0-9a-f]{6}$/i.test(x.hex||'')?x.hex:'#7c5cff';x.theme=THEMES.some(function(t){return t[0]===x.theme})?x.theme:'cosmos';x.emoji=String(x.emoji||'').slice(0,8);x.titles=Array.isArray(x.titles)&&x.titles.length?x.titles:['Débutant','Adepte','Expert','Maître','Légende','Mythe'];STATS[x.id]=x;KEYS.push(x.id)});
+}
+function interestTotal(){var total=0;KEYS.forEach(function(k){if(typeof state.xp[k]==='number'&&isFinite(state.xp[k]))total+=Math.max(0,state.xp[k])});return total}
+function interestId(){return 'i'+Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
 var TYPES={journaliere:'Journalière',commune:'Commune',epique:'Épique',legendaire:'Légendaire'};
 var JOURS=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
 /* Les jours internes (planning et quêtes) sont indexés du lundi (0) au dimanche (6). */
@@ -187,43 +241,34 @@ function localDayIndex(d){return (d.getDay()+6)%7}
 function uid(){return 'q'+Date.now().toString(36)+Math.floor(Math.random()*1e5).toString(36)}
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&','<':'<','>':'>','"':'"'}[c]})}
 function toast(m){var t=el('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on')},1800)}
-function dot(k){return '<span class="dot" style="background:'+STATS[k].hex+'"></span>'}
+function dot(k){var m=STATS[k];return '<span class="dot" style="background:'+(m?m.hex:'#8a90b4')+'"></span>'}
 
 /* Niveaux : niveau n demande 100*n XP pour passer au suivant */
 function levelOf(xp){var l=1,need=100;xp=Math.max(0,xp);while(xp>=need){xp-=need;l++;need=100*l}return{lv:l,cur:xp,need:need}}
-function titleOf(k,lv){var t=STATS[k].titles;return t[Math.min(t.length-1,Math.floor((lv-1)/10))]}
+function titleOf(k,lv){var t=(STATS[k]&&STATS[k].titles)||['Niveau'];return t[Math.min(t.length-1,Math.floor((lv-1)/10))]}
 function overallTitle(lv){var t=['Initié','Aventurier','Vétéran','Héros','Légende','Mythe'];return t[Math.min(t.length-1,Math.floor((lv-1)/10))]}
 
 function defaultState(){
-  return{player:'Joueur',quests:[],xp:{sport:0,meditation:0,philosophie:0,electronique:0},
+  return{player:'Joueur',interests:DEFAULT_INTERESTS.map(function(x){return JSON.parse(JSON.stringify(x))}),quests:[],xp:{sport:0,meditation:0,philosophie:0,electronique:0},
     log:[],checks:{},penalties:{},lastPenaltyCheck:dateKey(),
     schedule:{0:[],1:[],2:[],3:[],4:[],5:[],6:[]}}
 }
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
 function normalize(){
-  var d=defaultState();
-  for(var k in d){if(state[k]===undefined)state[k]=d[k]}
-  /* Migration unique : les anciennes quêtes stockaient getDay() (0=dimanche).
-     Le format courant utilise partout 0=lundi, comme le planning. */
-  if(state._weekdayIndexVersion!==1){
-    state.quests=(state.quests||[]).map(function(q){
-      if(q.days&&q.days.length)q.days=q.days.map(function(day){return (day+6)%7});
-      return q;
-    });
-    state._weekdayIndexVersion=1;
-  }
-  for(var i=0;i<KEYS.length;i++){if(typeof state.xp[KEYS[i]]!=='number')state.xp[KEYS[i]]=0}
-  for(var s=0;s<7;s++){if(!state.schedule[s])state.schedule[s]=[]}
-  state.quests.forEach(function(q){
-    if(!q.id)q.id=uid();
-    if(!TYPES[q.type])q.type='commune';
-    if(typeof q.xp!=='number'||isNaN(q.xp))q.xp=10;
-    if(!q.stats||!q.stats.length)q.stats=['sport'];
-    q.stats=q.stats.filter(function(s){return STATS[s]});
-    if(!q.stats.length)q.stats=['sport'];
-    if(!q.days||!q.days.length)q.days=[0,1,2,3,4,5,6];
-    if(!q.created)q.created=dateKey();
+  if(!state||typeof state!=='object')state=defaultState();
+  var d=defaultState();for(var k in d){if(state[k]===undefined)state[k]=d[k]}
+  if(!state.xp||typeof state.xp!=='object'||Array.isArray(state.xp))state.xp={};
+  if(!Array.isArray(state.quests))state.quests=[];if(!Array.isArray(state.log))state.log=[];
+  if(!state.checks||typeof state.checks!=='object')state.checks={};if(!state.penalties||typeof state.penalties!=='object')state.penalties={};
+  if(state._weekdayIndexVersion!==1){state.quests=state.quests.map(function(q){if(q.days&&q.days.length)q.days=q.days.map(function(day){return (day+6)%7});return q});state._weekdayIndexVersion=1}
+  syncInterests();
+  KEYS.forEach(function(key){if(typeof state.xp[key]!=='number'||!isFinite(state.xp[key]))state.xp[key]=0});
+  for(var sd=0;sd<7;sd++)if(!state.schedule[sd])state.schedule[sd]=[];
+  state.quests.forEach(function(q){if(!q.id)q.id=uid();if(!TYPES[q.type])q.type='commune';if(typeof q.xp!=='number'||isNaN(q.xp))q.xp=10;
+    if(!Array.isArray(q.stats))q.stats=q.stat?[q.stat]:['sport'];q.stats=q.stats.filter(function(x){return !!STATS[x]});if(!q.stats.length)q.stats=[KEYS[0]];
+    if(!Array.isArray(q.days)||!q.days.length)q.days=[0,1,2,3,4,5,6];if(!q.created)q.created=dateKey();
   });
+  state.log=state.log.filter(function(e){return !!e&&typeof e==='object'}).map(function(e){if(!Array.isArray(e.stats))e.stats=[];if(typeof e.xp!=='number'||!isFinite(e.xp))e.xp=0;if(typeof e.date!=='string')e.date='';return e});
 }
 function load(){
   var raw=null;
@@ -246,30 +291,20 @@ function load(){
 
 /* Ancien format → nouveau */
 function importData(o,silent){
-  var base=defaultState();
-  var old=o.quests||o.tasks||o.missions||[];
-  if(o.player&&typeof o.player==='string')base.player=o.player;
-  else if(o.name)base.player=o.name;
-  if(o.xp&&typeof o.xp==='object'){for(var i=0;i<KEYS.length;i++){if(typeof o.xp[KEYS[i]]==='number')base.xp[KEYS[i]]=o.xp[KEYS[i]]}}
-  if(o.log)base.log=o.log;
-  if(o.checks)base.checks=o.checks;
-  if(o.penalties)base.penalties=o.penalties;
-  if(o.schedule)base.schedule=o.schedule;
-  var map={daily:'journaliere',journaliere:'journaliere',easy:'journaliere',facile:'journaliere',
-    commune:'commune',common:'commune',normal:'commune',moyenne:'commune',
-    epique:'epique','épique':'epique',epic:'epique',dure:'epique',hard:'epique',
-    legendaire:'legendaire','légendaire':'legendaire',legendary:'legendaire',difficile:'legendaire'};
-  base.quests=old.map(function(q){
-    var t=String(q.type||q.difficulty||q.diff||'').toLowerCase();
-    var cats=q.stats||q.cats||(q.stat?[q.stat]:(q.cat?[q.cat]:[]));
-    return{id:q.id||uid(),title:q.title||q.name||q.text||'Quête',
-      type:map[t]||'commune',xp:+q.xp||+q.points||10,stats:cats,
-      days:q.days,done:!!q.done,doneAt:q.doneAt,created:q.created}
-  });
-  state=base;normalize();save();
-  if(!silent)renderAll();
+  if(!o||typeof o!=='object')throw new Error('Import invalide');
+  var base=defaultState(),old=o.quests||o.tasks||o.missions||[];
+  /* Un export récent porte explicitement l’index lundi=0 ; les anciens seront migrés. */
+  if(o._weekdayIndexVersion===1)base._weekdayIndexVersion=1;
+  if(o.player&&typeof o.player==='string')base.player=o.player;else if(o.name)base.player=o.name;
+  if(Array.isArray(o.interests)&&o.interests.length)base.interests=o.interests.map(function(x){return {id:String(x.id||x.key||interestId()),label:x.label||x.name||x.id,hex:x.hex||x.color,theme:x.theme||'cosmos',emoji:x.emoji||x.icon||'',titles:x.titles}});
+  var map={daily:'journaliere',journaliere:'journaliere',easy:'journaliere',facile:'journaliere',commune:'commune',common:'commune',normal:'commune',moyenne:'commune',epique:'epique','épique':'epique',epic:'epique',dure:'epique',hard:'epique',legendaire:'legendaire','légendaire':'legendaire',legendary:'legendaire',difficile:'legendaire'};
+  var nameMap={Sport:'sport','Méditation':'meditation',Meditation:'meditation','Philosophie':'philosophie','Électronique':'electronique',Electronique:'electronique'};
+  if(o.xp&&typeof o.xp==='object')Object.keys(o.xp).forEach(function(k){if(typeof o.xp[k]==='number'&&isFinite(o.xp[k]))base.xp[k]=o.xp[k]});
+  if(Array.isArray(o.log))base.log=o.log.map(function(e){if(!e||typeof e!=='object')return e;var z=Object.assign({},e);if(Array.isArray(z.stats))z.stats=z.stats.map(function(k){return nameMap[k]||k});return z});if(o.checks)base.checks=o.checks;if(o.penalties)base.penalties=o.penalties;if(o.schedule)base.schedule=o.schedule;
+  base.quests=(Array.isArray(old)?old:[]).map(function(q){var t=String(q.type||q.difficulty||q.diff||'').toLowerCase(),cats=q.stats||q.cats||(q.stat?[q.stat]:(q.cat?[q.cat]:[]));if(!Array.isArray(cats))cats=[cats];cats=cats.map(function(c){return nameMap[c]||c});
+    return{id:q.id||uid(),title:q.title||q.name||q.text||'Quête',type:map[t]||'commune',xp:+q.xp||+q.points||10,stats:cats,days:q.days,done:!!q.done,doneAt:q.doneAt,created:q.created};});
+  state=base;normalize();save();if(!silent)renderAll();
 }
-
 /* Appliquer les pénalités des jours passés (-5 XP par journalière active non cochée) */
 function activeOn(q,key){
   if(q.type!=='journaliere')return false;
@@ -297,9 +332,9 @@ function applyPenalties(){
 
 /* Gain / perte d'XP */
 function gain(q,sign,key){
-  q.stats.forEach(function(s){
-    var before=levelOf(state.xp[s]).lv;
-    state.xp[s]=Math.max(0,state.xp[s]+sign*q.xp);
+  q.stats.forEach(function(s){if(!STATS[s])return;
+    var before=levelOf(state.xp[s]||0).lv;
+    state.xp[s]=Math.max(0,(state.xp[s]||0)+sign*q.xp);
     var after=levelOf(state.xp[s]).lv;
     if(sign>0&&after>before)toast(STATS[s].label+' niveau '+after+' ★');
   });
@@ -336,7 +371,7 @@ el('overlay').addEventListener('click',function(e){if(e.target===el('overlay'))c
 
 function questForm(id,presetType){
   var q=id?state.quests.filter(function(x){return x.id===id})[0]:null;
-  tmp={type:q?q.type:(presetType||'commune'),stats:q?q.stats.slice():['sport'],days:q?q.days.slice():[0,1,2,3,4,5,6]};
+  tmp={type:q?q.type:(presetType||'commune'),stats:q?q.stats.slice():[KEYS[0]],days:q?q.days.slice():[0,1,2,3,4,5,6]};
   var h='<h2>'+(q?'Modifier la quête':'Nouvelle quête')+'</h2>';
   h+='<label>Titre</label><input id="fTitle" value="'+(q?esc(q.title):'')+'" placeholder="Ex : 30 pompes">';
   h+='<label>Type</label><div class="chips" id="fType">';
@@ -345,7 +380,7 @@ function questForm(id,presetType){
   h+='<div id="fDaysBox"></div>';
   h+='<label>XP gagnée (libre)</label><input id="fXp" type="number" min="1" value="'+(q?q.xp:10)+'">';
   h+='<label>Centres d\'intérêt (1 ou plusieurs)</label><div class="chips" id="fStats">';
-  KEYS.forEach(function(k){h+='<button data-s="'+k+'">'+dot(k)+STATS[k].label+'</button>'});
+  KEYS.forEach(function(k){h+='<button data-s="'+esc(k)+'">'+dot(k)+esc(STATS[k].emoji||'')+' '+esc(STATS[k].label)+'</button>'});
   h+='</div>';
   h+='<button class="btn" id="fSave">Enregistrer</button>';
   if(q)h+='<button class="btn danger" id="fDel">Supprimer</button>';
@@ -403,6 +438,52 @@ function paintDays(){
   };
 }
 
+function interestForm(id){
+  var x=id?STATS[id]:null,editing=!!x;
+  var h='<h2>'+(editing?'Modifier le centre':'Nouveau centre d’intérêt')+'</h2><label>Nom</label><input id="iName" maxlength="32" value="'+(x?esc(x.label):'')+'" placeholder="Ex : Lecture">';
+  h+='<label>Couleur</label><input id="iColor" type="color" value="'+(x?x.hex:'#7c5cff')+'">';
+  h+='<label>Thème d’animation</label><select id="iTheme">';
+  THEMES.forEach(function(t){h+='<option value="'+t[0]+'"'+(x&&x.theme===t[0]?' selected':'')+'>'+esc(t[1])+'</option>'});
+  h+='</select><label>Emoji ou icône (facultatif)</label><input id="iEmoji" maxlength="8" value="'+(x?esc(x.emoji||''):'')+'" placeholder="✨">';
+  h+='<div id="iPreview" class="theme-preview stat" data-theme="'+(x?x.theme:'cosmos')+'" style="--interest:'+(x?x.hex:'#7c5cff')+'"><b class="interest-title">'+esc(x?(x.emoji||'✨')+' '+x.label:'✨ Aperçu du centre')+'</b></div>';
+  h+='<button class="btn" id="iSave">'+(editing?'Enregistrer':'Créer le centre')+'</button>';
+  if(editing)h+='<button class="btn sec" id="iDelete">Supprimer ce centre</button>';
+  h+='<button class="btn sec" id="iCancel">Annuler</button>';openSheet(h);
+  function preview(){var nm=el('iName').value.trim()||'Aperçu du centre',emo=el('iEmoji').value.trim();el('iPreview').setAttribute('data-theme',el('iTheme').value);el('iPreview').style.setProperty('--interest',el('iColor').value);el('iPreview').innerHTML='<b class="interest-title">'+esc((emo?emo+' ':'')+nm)+'</b>'}
+  ['iName','iEmoji','iColor','iTheme'].forEach(function(k){el(k).addEventListener('input',preview);el(k).addEventListener('change',preview)});
+  el('iCancel').onclick=closeSheet;
+  el('iSave').onclick=function(){var label=el('iName').value.trim(),emoji=el('iEmoji').value.trim(),hex=el('iColor').value,theme=el('iTheme').value;
+    if(!label){toast('Donne un nom au centre');return}if(!/^#[0-9a-f]{6}$/i.test(hex)){toast('Couleur invalide');return}
+    if(editing){x.label=label;x.emoji=emoji;x.hex=hex;x.theme=theme}
+    else{var key=label.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_|_$/g,'')||interestId();if(STATS[key])key=key+'_'+interestId().slice(-5);var fresh={id:key,label:label,hex:hex,theme:theme,emoji:emoji,titles:['Débutant','Adepte','Confirmé','Expert','Maître','Légende']};state.interests.push(fresh);state.xp[key]=0;}
+    normalize();save();closeSheet();renderAll();toast(editing?'Centre modifié':'Centre créé');
+  };
+  if(editing)el('iDelete').onclick=function(){deleteInterest(id)};
+}
+function manageInterests(){
+  var h='<h2>Centres d’intérêt</h2><div class="mut">Choisis leur thème et leur couleur ; les cartes suivent leur progression.</div>';
+  KEYS.forEach(function(k){var x=STATS[k];h+='<div class="interest-row"><div class="row"><span class="dot" style="width:12px;height:12px;background:'+x.hex+'"></span><div class="sp"><b>'+esc(x.emoji||'')+' '+esc(x.label)+'</b><div class="mut">'+esc((THEMES.filter(function(t){return t[0]===x.theme})[0]||['',''])[1])+'</div></div><button class="mini" data-iedit="'+esc(k)+'">Modifier</button></div></div>'});
+  h+='<button class="btn" id="iAdd">＋ Ajouter un centre</button><button class="btn sec" id="iClose">Fermer</button>';openSheet(h);
+  el('iAdd').onclick=function(){interestForm(null)};el('iClose').onclick=closeSheet;
+  el('sheet').onclick=function(e){var b=e.target.closest('[data-iedit]');if(b)interestForm(b.getAttribute('data-iedit'))};
+}
+function deleteInterest(id){
+  var x=STATS[id];if(!x)return;
+  if(KEYS.length<2){toast('Conserve au moins un centre');return}
+  var used=state.quests.some(function(q){return q.stats.indexOf(id)>=0});
+  var target=null;
+  if(used){var options=KEYS.filter(function(k){return k!==id}).map(function(k,i){return (i+1)+'. '+STATS[k].label}).join('\n');
+    var answer=prompt('Des quêtes utilisent « '+x.label+' ». Entrez le numéro du centre de réaffectation, ou laissez vide pour supprimer ces quêtes.\n'+options,'1');
+    if(answer===null)return;var n=parseInt(answer,10);if(answer.trim()&&(!n||!KEYS.filter(function(k){return k!==id})[n-1])){toast('Choix invalide');return}if(answer.trim())target=KEYS.filter(function(k){return k!==id})[n-1];
+  }
+  if(!confirm('Confirmer la suppression de « '+x.label+' » ?'+(used?(target?' Les quêtes et XP seront réaffectées.':' Les quêtes liées seront supprimées.'):'') ))return;
+  if(target){state.quests.forEach(function(q){if(q.stats.indexOf(id)>=0)q.stats=q.stats.map(function(k){return k===id?target:k}).filter(function(k,i,a){return a.indexOf(k)===i})});
+    var moved=Number(state.xp[id])||0;state.xp[target]=(Number(state.xp[target])||0)+moved;
+    state.log.forEach(function(e){if(Array.isArray(e.stats)&&e.stats.indexOf(id)>=0)e.stats=e.stats.map(function(k){return k===id?target:k}).filter(function(k,i,a){return a.indexOf(k)===i})});
+  }else{state.quests=state.quests.filter(function(q){return q.stats.indexOf(id)<0});}
+  delete state.xp[id];state.interests=state.interests.filter(function(a){return a.id!==id});syncInterests();save();closeSheet();renderAll();toast(target?'Quêtes et progression réaffectées':'Centre supprimé');
+}
+
 function slotForm(){
   tmp.slotDays=[schedDay];
   var h='<h2>Nouveau créneau</h2><label>Nom</label><input id="slotName" placeholder="Ex : Lecture">';
@@ -451,10 +532,10 @@ function openSettings(){
 }
 
 /* Affichage */
-function chipsFor(q){return q.stats.map(function(s){return '<span class="tag">'+dot(s)+STATS[s].label+'</span>'}).join('')}
+function chipsFor(q){return q.stats.map(function(s){return '<span class="tag">'+dot(s)+esc(STATS[s]?STATS[s].label:s)+'</span>'}).join('')}
 function renderHeader(){
   el('hName').textContent=state.player;
-  var tot=0;KEYS.forEach(function(k){tot+=state.xp[k]});
+  var tot=interestTotal();
   var o=levelOf(tot);
   el('hSub').textContent='Niveau '+o.lv+' · '+overallTitle(o.lv);
 }
@@ -497,24 +578,17 @@ function renderQuests(){
   el('questList').innerHTML=h||'<div class="empty">'+(questFilter==='archives'?'Aucune quête archivée.':'Aucune quête ici.<br>Appuie sur + pour en créer.')+'</div>';
 }
 function renderProfile(){
-  var tot=0;KEYS.forEach(function(k){tot+=state.xp[k]});
-  var o=levelOf(tot);
+  var tot=interestTotal(),o=levelOf(tot);
   el('ovLv').textContent='Niv. '+o.lv;el('ovTi').textContent=overallTitle(o.lv)+' · '+state.player;el('ovLv').parentNode.className='big'+(o.lv>=30?' high':'');
-  el('ovBar').style.width=(o.cur/o.need*100)+'%';
-  el('ovXp').textContent=o.cur+' / '+o.need+' XP · total '+tot;
-  var h='';
-  KEYS.forEach(function(k){
-    var l=levelOf(state.xp[k]);
-    h+='<div class="stat" style="--interest:'+STATS[k].hex+'"><div class="top"><span>'+dot(k)+'<b>'+STATS[k].label+'</b> · '+titleOf(k,l.lv)+'</span><span>Niv. '+l.lv+'</span></div>'+
-      '<div class="bar"><i style="width:'+(l.cur/l.need*100)+'%;background:'+STATS[k].hex+'"></i></div>'+
-      '<div class="mut" style="margin-top:3px">'+l.cur+' / '+l.need+' XP</div></div>';
-  });
-  el('statList').innerHTML=h;
+  el('ovBar').style.width=(o.cur/o.need*100)+'%';el('ovXp').textContent=o.cur+' / '+o.need+' XP · total '+tot;
+  var h='';KEYS.forEach(function(k){var m=STATS[k],l=levelOf(state.xp[k]);
+    h+='<div class="stat" data-theme="'+m.theme+'" style="--interest:'+m.hex+'"><div class="top"><span>'+dot(k)+'<b class="interest-title">'+esc(m.emoji||'')+' '+esc(m.label)+'</b> · '+esc(titleOf(k,l.lv))+'</span><span>Niv. '+l.lv+'</span></div><div class="bar"><i style="width:'+(l.cur/l.need*100)+'%;background:'+m.hex+'"></i></div><div class="mut" style="margin-top:3px">'+l.cur+' / '+l.need+' XP</div></div>';
+  });el('statList').innerHTML=h||'<div class="empty">Ajoute ton premier centre d’intérêt.</div>';
 }
 function buckets(){
   var n=statRange,today=dateKey(),start=addDays(today,-(n-1)),step=n<=31?1:(n<=100?7:30),res=[];
   for(var i=0;i<n;i+=step){
-    var b={from:addDays(start,i),to:addDays(start,Math.min(n-1,i+step-1)),v:{sport:0,meditation:0,philosophie:0,electronique:0}};
+    var b={from:addDays(start,i),to:addDays(start,Math.min(n-1,i+step-1)),v:(function(){var z={};KEYS.forEach(function(k){z[k]=0});return z})()};
     res.push(b);
   }
   state.log.forEach(function(e){
@@ -530,9 +604,9 @@ function buckets(){
 function renderStats(){
   var bs=el('rangeSeg').querySelectorAll('button');
   for(var i=0;i<bs.length;i++)bs[i].className=parseInt(bs[i].getAttribute('data-r'),10)===statRange?'on':'';
-  var b=buckets(),lg='',tot={sport:0,meditation:0,philosophie:0,electronique:0},all=0;
+  var b=buckets(),lg='',tot={};KEYS.forEach(function(k){tot[k]=0});var all=0;
   b.forEach(function(x){KEYS.forEach(function(k){tot[k]+=x.v[k];all+=x.v[k]})});
-  KEYS.forEach(function(k){lg+='<span>'+dot(k)+STATS[k].label+'</span>'});
+  KEYS.forEach(function(k){lg+='<span>'+dot(k)+esc(STATS[k].label)+'</span>'});
   el('chartLegend').innerHTML=lg;
   var sh='<div class="stat"><div class="top"><span><b>Total période</b></span><span>'+all+' XP</span></div></div>';
   KEYS.forEach(function(k){sh+='<div class="stat"><div class="top"><span>'+dot(k)+STATS[k].label+'</span><span>'+tot[k]+' XP</span></div></div>'});
@@ -626,6 +700,7 @@ el('btnAdd').onclick=function(){
   questForm(null,t);
 };
 el('btnSettings').onclick=openSettings;
+el('btnInterests').onclick=manageInterests;
 window.addEventListener('resize',function(){if(currentView==='stats')drawChart()});
 
 /* Démarrage */
